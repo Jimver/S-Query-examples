@@ -1,6 +1,5 @@
 package org.example;
 
-import com.hazelcast.config.AttributeConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.jet.Jet;
 import com.hazelcast.jet.JetInstance;
