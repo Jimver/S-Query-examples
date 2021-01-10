@@ -21,13 +21,16 @@ public class MainStreamJob {
                 .withNativeTimestamps(10L).setLocalParallelism(1)
                 .groupingKey(e -> e.sequence())
                 .mapStateful(
+                        // The time the state can live before being evicted
                         SECONDS.toMillis(3),
+                        // Method creating a new state object
                         () -> new Long[]{0L},
+                        // Method that maps a given event to the new output given the state
                         (state, id, event) -> {
-                            state[0]++;
                             state[0]++;
                             return state[0];
                         },
+                        // Method that executes when states are evicted by watermarks
                         (state, id, currentWatermark) -> id
                 ).setLocalParallelism(1)
                 .writeTo(Sinks.logger()).setLocalParallelism(1);
