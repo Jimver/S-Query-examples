@@ -12,6 +12,7 @@
         <module>custom-atributes</module>
         <module>stateful-stream-job</module>
         <module>query-state-job</module>
+        <module>aggregate-stream-job</module>
     </modules>
 
     <properties>

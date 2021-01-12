@@ -25,18 +25,16 @@ public class MainStreamJob {
                         SECONDS.toMillis(3),
                         // Method creating a new state object
                         () -> new Long[]{0L},
-                        // Method that maps a given event to the new output given the state
-                        (state, id, event) -> {
+                        // Method that maps a given event and corresponding key to the new output given the state
+                        (state, key, event) -> {
                             state[0]++;
                             return state[0];
                         },
-                        // Method that executes when states are evicted by watermarks
-                        (state, id, currentWatermark) -> id
+                        // Method that executes when states belonging to a key are evicted by watermarks
+                        (state, key, currentWatermark) -> key
                 ).setLocalParallelism(1)
                 .writeTo(Sinks.logger()).setLocalParallelism(1);
         jet = Jet.bootstrappedInstance();
-        hz = jet.getHazelcastInstance();
-
         jet.newJob(p, config).join();
     }
 }
