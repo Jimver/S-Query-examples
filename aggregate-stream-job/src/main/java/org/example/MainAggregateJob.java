@@ -18,10 +18,10 @@ public class MainAggregateJob {
         JobConfig config = new JobConfig();
         config.setName("jet-aggregate");
         Pipeline p = Pipeline.create();
-        p.readFrom(TestSources.itemStream(5))
-                .withNativeTimestamps(10L).setLocalParallelism(1)
-                .rollingAggregate(AggregateOperations.counting()).setLocalParallelism(1)
-                .writeTo(Sinks.logger()).setLocalParallelism(1);
+        p.readFrom(TestSources.itemStream(2))
+                .withNativeTimestamps(10L)
+                .rollingAggregate(AggregateOperations.counting())
+                .writeTo(Sinks.logger());
         jet = Jet.bootstrappedInstance();
         jet.newJob(p, config).join();
     }

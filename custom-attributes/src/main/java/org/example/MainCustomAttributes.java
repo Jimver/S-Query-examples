@@ -17,5 +17,6 @@ public class MainCustomAttributes {
 
         IMap<String, String> stateMapNames = hz.getMap(TransformStatefulP.CUSTOM_ATTRIBUTE_IMAP_NAME);
         stateMapNames.put("longarr", LongArrayExtractor.class.getName());
+//        stateMapNames.put(CustomState.class.getSimpleName(), GenericLongExtractor.class.getName());
     }
 }

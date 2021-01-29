@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>custom-atributes</module>
+        <module>custom-attributes</module>
         <module>stateful-stream-job</module>
         <module>query-state-job</module>
         <module>aggregate-stream-job</module>
