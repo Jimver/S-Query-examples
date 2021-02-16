@@ -9,14 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>stateful-stream-job</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-    </dependencies>
+    <artifactId>two-counter-job</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -31,7 +24,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.MainStreamJob</mainClass>
+                            <mainClass>org.example.MainTwoCounterJob</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

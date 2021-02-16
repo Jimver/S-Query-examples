@@ -13,6 +13,8 @@
         <module>stateful-stream-job</module>
         <module>query-state-job</module>
         <module>aggregate-stream-job</module>
+        <module>two-counter-job</module>
+        <module>sample-imaps</module>
     </modules>
 
     <properties>
@@ -25,12 +27,12 @@
         <dependency>
             <groupId>com.hazelcast.jet</groupId>
             <artifactId>hazelcast-jet</artifactId>
-            <version>4.4-SNAPSHOT</version>
+            <version>4.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast-all</artifactId>
-            <version>4.1.1-SNAPSHOT</version>
+            <version>4.1.1</version>
         </dependency>
     </dependencies>
 
