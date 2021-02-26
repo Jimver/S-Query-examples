@@ -14,14 +14,39 @@ import com.hazelcast.sql.SqlRow;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class MainQuery {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-//        List<String> stateMapNames = hz.getList(TransformStatefulP.STATE_IMAP_NAMES_LIST_NAME);
-//        List<String> snapshotMapNames = hz.getList(TransformStatefulP.SNAPSHOT_IMAP_NAMES_LIST_NAME);
+        List<String> stateMapNames = hz.getList(TransformStatefulP.STATE_IMAP_NAMES_LIST_NAME);
+        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_IMAP_NAME);
+
+        String ssMap1 = snapshotMapNames.get("id1-map");
+        String ssMap2 = snapshotMapNames.get("id2-map");
+
+        System.out.println(ssMap1);
+        System.out.println(ssMap2);
+        String queryString = String.format("SELECT \"%1$s\".partitionKey AS key1, \"%1$s\".counter AS counter1, \"%2$s\".partitionKey AS key2, \"%2$s\".counter AS counter2, (\"%1$s\".counter + \"%2$s\".counter) AS combined, \"%1$s\".snapshotId AS ss1, \"%2$s\".snapshotId AS ss2 FROM \"%1$s\" INNER JOIN \"%2$s\" USING (partitionKey, snapshotId)", ssMap1, ssMap2);
+        System.out.println(queryString);
+
+        try (SqlResult result = hz.getSql().execute(queryString)) {
+            System.out.println("Key1, Key2, Counter1, Counter2, Countertotal, Snapshot 1, Snapshot 2");
+            for (SqlRow row : result) {
+                long key1 = row.getObject(0);
+                long counter1 = row.getObject(1);
+                long key2 = row.getObject(2);
+                long counter2 = row.getObject(3);
+                long countertotal = row.getObject(4);
+                long ss1 = row.getObject(5);
+                long ss2 = row.getObject(6);
+
+                System.out.printf("%d,\t%d,\t%d,\t%d,\t%d,\t%d,\t%d%n", key1, key2, counter1, counter2, countertotal, ss1, ss2);
+            }
+        }
+
 //        String[] imapsArray = stateMapNames.toArray(new String[0]);
 //        String[] ssArray = snapshotMapNames.toArray(new String[0]);
 //        System.out.println("State IMaps:");

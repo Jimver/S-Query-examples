@@ -43,6 +43,9 @@ public class SampleImapsJob {
         sampletwo.put(1L, new Employee("name2", 41));
         sampletwo.put(2L, new Employee("name3", 51));
 
+//      SELECT "snapshot-id1-map".partitionKey, "snapshot-id1-map".counter, "snapshot-id2-map".partitionKey, "snapshot-id2-map".counter FROM "snapshot-id1-map" JOIN "snapshot-id2-map" ON "snapshot-id1-map".partitionKey="snapshot-id2-map".partitionKey;
+//      SELECT "snapshot-id1-map".partitionKey AS key1, "snapshot-id1-map".counter AS counter1, "snapshot-id2-map".partitionKey AS key2, "snapshot-id2-map".counter AS counter2, ("snapshot-id1-map".counter + "snapshot-id2-map".counter) AS combined FROM "snapshot-id1-map" INNER JOIN "snapshot-id2-map" USING (partitionKey);
+
         try (SqlResult result = hz.getSql().execute(
                 "SELECT sampleone.name, sampletwo.name, sampleone.age, sampletwo.age FROM sampleone JOIN sampletwo ON sampleone.name=sampletwo.name")) {
             for (SqlRow row : result) {
