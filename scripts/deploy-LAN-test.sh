@@ -10,7 +10,6 @@ HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
 
 JARS=(
-  "custom-attributes/target/custom-attributes-1.0-SNAPSHOT.jar"
   "query-state-job/target/query-state-job-1.0-SNAPSHOT.jar"
   "stateful-stream-job/target/stateful-stream-job-1.0-SNAPSHOT.jar"
   "two-counter-job/target/two-counter-job-1.0-SNAPSHOT.jar"

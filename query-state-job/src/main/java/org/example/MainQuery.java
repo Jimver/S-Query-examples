@@ -20,18 +20,18 @@ public class MainQuery {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-        List<String> stateMapNames = hz.getList(TransformStatefulP.STATE_IMAP_NAMES_LIST_NAME);
-        List<String> snapshotMapNames = hz.getList(TransformStatefulP.SNAPSHOT_IMAP_NAMES_LIST_NAME);
-        String[] imapsArray = stateMapNames.toArray(new String[0]);
-        String[] ssArray = snapshotMapNames.toArray(new String[0]);
-        System.out.println("State IMaps:");
-        for (String s : imapsArray) {
-            System.out.println("\t" + s);
-        }
-        System.out.println("Snapshot IMaps:");
-        for (String s : ssArray) {
-            System.out.println("\t" + s);
-        }
+//        List<String> stateMapNames = hz.getList(TransformStatefulP.STATE_IMAP_NAMES_LIST_NAME);
+//        List<String> snapshotMapNames = hz.getList(TransformStatefulP.SNAPSHOT_IMAP_NAMES_LIST_NAME);
+//        String[] imapsArray = stateMapNames.toArray(new String[0]);
+//        String[] ssArray = snapshotMapNames.toArray(new String[0]);
+//        System.out.println("State IMaps:");
+//        for (String s : imapsArray) {
+//            System.out.println("\t" + s);
+//        }
+//        System.out.println("Snapshot IMaps:");
+//        for (String s : ssArray) {
+//            System.out.println("\t" + s);
+//        }
 
 //        for (String stateIMap : imapsArray) {
 //            System.out.println("\nResults for state IMap: " + stateIMap);
