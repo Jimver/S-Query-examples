@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 JET_SRC_DIR="/mnt/c/Users/Jim/IdeaProjects/hazelcast-jet"
-TAR_FILE="hazelcast-jet-4.5-SNAPSHOT"
+TAR_FILE="hazelcast-jet-4.4.1-SNAPSHOT"
 
 REMOTE_HOSTS=(node1 node2)
 REMOTE_USERS=(node1 node2)
