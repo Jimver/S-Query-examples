@@ -14,7 +14,7 @@ JARS=(
   "stateful-stream-job/target/stateful-stream-job-1.0-SNAPSHOT.jar"
   "two-counter-job/target/two-counter-job-1.0-SNAPSHOT.jar"
   "sample-imaps/target/sample-imaps-1.0-SNAPSHOT.jar"
-  "user-tracking-job/target/sample-imaps-1.0-SNAPSHOT.jar"
+  "user-tracking-job/target/user-tracking-job-1.0-SNAPSHOT.jar"
 )
 
 if [ "$HOST_NUM" -ne "$USER_NUM" ];then
