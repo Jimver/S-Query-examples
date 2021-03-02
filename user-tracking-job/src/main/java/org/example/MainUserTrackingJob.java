@@ -31,7 +31,7 @@ public class MainUserTrackingJob {
                         (state, key, userEvent) -> {
                             state.incrementViews(userEvent.getCategory());
 //                            return String.format("ID: %d, %s", key, state.getViews(userEvent.getCategory()));
-                            return state.mostViews();
+                            return String.format("Most popular for %d: %s", key, state.mostViews());
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
                         (state, key, currentWatermark) -> "Evicted key: " + key

@@ -3,12 +3,12 @@ package org.example;
 import java.io.Serializable;
 
 public class TrackingState implements Serializable {
-    private final Counter clothesViews = new Counter();
-    private final Counter foodViews = new Counter();
-    private final Counter toolsViews = new Counter();
-    private final Counter electronicsViews = new Counter();
+    public int clothesViews = 0;
+    public int foodViews = 0;
+    public int toolsViews = 0;
+    public int electronicsViews = 0;
 
-    private Counter getCounter(Category category) {
+    public int getViews(Category category) {
         switch (category) {
             case CLOTHES:
                 return clothesViews;
@@ -23,19 +23,30 @@ public class TrackingState implements Serializable {
         }
     }
 
-    public int getViews(Category category) {
-        return getCounter(category).getValue();
-    }
-
     public void incrementViews(Category category) {
-        getCounter(category).increment();
+        switch (category) {
+            case CLOTHES:
+                clothesViews++;
+                break;
+            case FOOD:
+                foodViews++;
+                break;
+            case TOOLS:
+                toolsViews++;
+                break;
+            case ELECTRONICS:
+                electronicsViews++;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid category: " + category.toString());
+        }
     }
 
     public Category mostViews() {
         Category[] categories = Category.values();
         Category mostViews = categories[0];
         for (Category category: categories) {
-            if (getCounter(category).getValue() > getCounter(mostViews).getValue()) {
+            if (getViews(category) > getViews(mostViews)) {
                 mostViews = category;
             }
         }
