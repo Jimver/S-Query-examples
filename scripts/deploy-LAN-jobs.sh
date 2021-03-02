@@ -9,13 +9,21 @@ REMOTE_USERS=(node1 node2)
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
 
-JARS=(
-  "query-state-job/target/query-state-job-1.0-SNAPSHOT.jar"
-  "stateful-stream-job/target/stateful-stream-job-1.0-SNAPSHOT.jar"
-  "two-counter-job/target/two-counter-job-1.0-SNAPSHOT.jar"
-  "sample-imaps/target/sample-imaps-1.0-SNAPSHOT.jar"
-  "user-tracking-job/target/user-tracking-job-1.0-SNAPSHOT.jar"
+JOBS=(
+  "query-state-job"
+  "stateful-stream-job"
+  "two-counter-job"
+  "sample-imaps"
+  "user-tracking-job"
+  "user-tracking-query-job"
 )
+
+JARS=()
+
+for JOB in "${JOBS[@]}"; do
+  JAR="$JOB/target/$JOB-1.0-SNAPSHOT.jar"
+  JARS+=( "$JAR" )
+done
 
 if [ "$HOST_NUM" -ne "$USER_NUM" ];then
   echo "Different number of hosts and users!" 1>&2

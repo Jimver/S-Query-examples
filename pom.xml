@@ -15,6 +15,7 @@
         <module>two-counter-job</module>
         <module>sample-imaps</module>
         <module>user-tracking-job</module>
+        <module>user-tracking-query-job</module>
     </modules>
 
     <properties>
