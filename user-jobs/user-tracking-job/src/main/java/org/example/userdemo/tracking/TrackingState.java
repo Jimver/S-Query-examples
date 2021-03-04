@@ -1,4 +1,6 @@
-package org.example;
+package org.example.userdemo.tracking;
+
+import userdemo.Category;
 
 import java.io.Serializable;
 

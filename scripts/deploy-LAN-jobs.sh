@@ -14,6 +14,11 @@ JOBS=(
   "stateful-stream-job"
   "two-counter-job"
   "sample-imaps"
+)
+
+USER_JOBS=(
+  "user-jobs-shared"
+  "user-order-job"
   "user-tracking-job"
   "user-tracking-query-job"
 )
@@ -22,6 +27,11 @@ JARS=()
 
 for JOB in "${JOBS[@]}"; do
   JAR="$JOB/target/$JOB-1.0-SNAPSHOT.jar"
+  JARS+=( "$JAR" )
+done
+
+for JOB in "${USER_JOBS[@]}"; do
+  JAR="user-jobs/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
   JARS+=( "$JAR" )
 done
 

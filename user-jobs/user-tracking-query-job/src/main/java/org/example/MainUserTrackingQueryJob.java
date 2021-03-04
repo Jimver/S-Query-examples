@@ -6,7 +6,6 @@ import com.hazelcast.jet.Jet;
 import com.hazelcast.jet.JetInstance;
 import com.hazelcast.jet.impl.processor.TransformStatefulP;
 import com.hazelcast.sql.SqlColumnMetadata;
-import com.hazelcast.sql.SqlColumnType;
 import com.hazelcast.sql.SqlResult;
 import com.hazelcast.sql.SqlRow;
 import com.hazelcast.sql.SqlRowMetadata;
@@ -31,8 +30,10 @@ public class MainUserTrackingQueryJob {
 
         System.out.println(ssMap);
         long snapshotId = distributedSnapshotId.get();
+        long querySnapshotId = Math.max(0, snapshotId - 1);
+        System.out.printf("Latest snapshot id: %d, querying: %d%n", snapshotId, querySnapshotId);
         String queryMap = query_ss ? ssMap : liveMap;
-        String queryString = String.format("SELECT * FROM \"%s\" WHERE snapshotId=%d", queryMap, snapshotId);
+        String queryString = String.format("SELECT * FROM \"%s\" WHERE snapshotId=%d", queryMap, querySnapshotId);
         System.out.println(queryString);
 
         try (SqlResult result = hz.getSql().execute(queryString)) {

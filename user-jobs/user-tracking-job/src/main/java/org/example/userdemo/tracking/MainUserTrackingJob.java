@@ -1,4 +1,4 @@
-package org.example;
+package org.example.userdemo.tracking;
 
 import com.hazelcast.jet.Jet;
 import com.hazelcast.jet.JetInstance;
@@ -18,10 +18,10 @@ public class MainUserTrackingJob {
         config.setSnapshotIntervalMillis(SECONDS.toMillis(10)); // Snapshot every 10s
         Pipeline p = Pipeline.create();
         StreamStage<UserEvent> src = p
-                .readFrom(UserEvent.itemStream(2, 10)) // Stream of random UserEvents (2 per second)
+                .readFrom(UserEvent.itemStream(1, 10)) // Stream of random UserEvents (2 per second)
                 .withNativeTimestamps(SECONDS.toMillis(5)); // Use native timestamps)
         src
-                .groupingKey(UserEvent::getUserId)
+                .groupingKey(UserEvent::getUserName)
                 .mapStateful(
                         // The time the state can live before being evicted
                         SECONDS.toMillis(10),
@@ -31,7 +31,7 @@ public class MainUserTrackingJob {
                         (state, key, userEvent) -> {
                             state.incrementViews(userEvent.getCategory());
 //                            return String.format("ID: %d, %s", key, state.getViews(userEvent.getCategory()));
-                            return String.format("Most popular for %d: %s", key, state.mostViews());
+                            return String.format("Most popular for %s: %s", key, state.mostViews());
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
                         (state, key, currentWatermark) -> "Evicted key: " + key

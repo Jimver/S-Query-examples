@@ -14,8 +14,7 @@
         <module>aggregate-stream-job</module>
         <module>two-counter-job</module>
         <module>sample-imaps</module>
-        <module>user-tracking-job</module>
-        <module>user-tracking-query-job</module>
+        <module>user-jobs</module>
     </modules>
 
     <properties>
@@ -36,20 +35,4 @@
             <version>4.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.example.org.example.MainStreamJob</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

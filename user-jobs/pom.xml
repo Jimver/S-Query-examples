@@ -9,25 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>user-tracking-query-job</artifactId>
+    <artifactId>user-jobs</artifactId>
+
+    <modules>
+        <module>user-jobs-shared</module>
+        <module>user-order-job</module>
+        <module>user-tracking-job</module>
+        <module>user-tracking-query-job</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>org.example.MainUserTrackingQueryJob</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+
+    <packaging>pom</packaging>
 </project>
