@@ -14,9 +14,9 @@
     <modules>
         <module>user-jobs-shared</module>
         <module>user-order-job</module>
+        <module>user-order-query-job</module>
         <module>user-tracking-job</module>
         <module>user-tracking-query-job</module>
-        <module>user-orders-query-job</module>
     </modules>
 
     <properties>
