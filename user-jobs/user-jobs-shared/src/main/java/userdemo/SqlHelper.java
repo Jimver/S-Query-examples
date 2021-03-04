@@ -1,5 +1,10 @@
 package userdemo;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.cp.IAtomicLong;
+import com.hazelcast.jet.Jet;
+import com.hazelcast.jet.JetInstance;
+import com.hazelcast.jet.impl.processor.TransformStatefulP;
 import com.hazelcast.sql.SqlColumnMetadata;
 import com.hazelcast.sql.SqlResult;
 import com.hazelcast.sql.SqlRow;
@@ -7,8 +12,36 @@ import com.hazelcast.sql.SqlRowMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SqlHelper {
+    public static void queryGivenMapName(String transformName, JetInstance jet) {
+        HazelcastInstance hz = jet.getHazelcastInstance();
+
+        Map<String, String> stateMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_LIVE_STATE_IMAP_NAME);
+        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_STATE_IMAP_NAME);
+        Map<String, String> snapshotIdNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_ID_IMAP_NAME);
+
+        boolean querySs = true;
+        String liveMapName = stateMapNames.get(transformName);
+        String ssMapName = snapshotMapNames.get(transformName);
+        String ssIdName = snapshotIdNames.get(transformName);
+
+        IAtomicLong distributedSnapshotId = hz.getCPSubsystem().getAtomicLong(ssIdName);
+
+        System.out.println(ssMapName);
+        long snapshotId = distributedSnapshotId.get();
+        long querySnapshotId = Math.max(0, snapshotId - 1);
+        System.out.printf("Latest snapshot id: %d, querying: %d%n", snapshotId, querySnapshotId);
+        String queryMap = querySs ? ssMapName : liveMapName;
+        String queryString = String.format("SELECT * FROM \"%s\" WHERE snapshotId=%d", queryMap, querySnapshotId);
+        System.out.println(queryString);
+
+        try (SqlResult result = hz.getSql().execute(queryString)) {
+            resultToHeaderAndRows(result).forEach(System.out::println);
+        }
+    }
+
     public static List<String> resultToHeaderAndRows(SqlResult result) {
         List<String> arrayResult = new ArrayList<>();
         SqlRowMetadata rowMetadata = result.getRowMetadata();
