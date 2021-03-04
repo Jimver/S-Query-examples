@@ -19,6 +19,7 @@ JOBS=(
 USER_JOBS=(
   "user-jobs-shared"
   "user-order-job"
+  "user-order-query-job"
   "user-tracking-job"
   "user-tracking-query-job"
 )

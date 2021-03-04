@@ -1,4 +1,4 @@
-package org.example;
+package userdemo;
 
 import com.hazelcast.sql.SqlColumnMetadata;
 import com.hazelcast.sql.SqlResult;

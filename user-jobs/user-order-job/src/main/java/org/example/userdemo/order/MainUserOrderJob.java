@@ -34,7 +34,7 @@ public class MainUserOrderJob {
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
                         (state, key, currentWatermark) -> "Evicted key: " + key
-                ).setName("tracking-map")
+                ).setName("order-map")
                 .writeTo(Sinks.logger());
 
         JetInstance jet = Jet.bootstrappedInstance();
