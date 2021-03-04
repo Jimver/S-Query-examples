@@ -54,8 +54,6 @@ public class SqlHelper {
             }
             if (i < rowMetadata.getColumnCount() - 1) {
                 row.append(",\t");
-            } else {
-                row.append("%n");
             }
         }
         arrayResult.add(header.toString());
