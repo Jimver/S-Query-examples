@@ -17,6 +17,7 @@
         <module>user-order-query-job</module>
         <module>user-tracking-job</module>
         <module>user-tracking-query-job</module>
+        <module>user-join-query-job</module>
     </modules>
 
     <properties>

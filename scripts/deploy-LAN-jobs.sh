@@ -18,6 +18,7 @@ JOBS=(
 
 USER_JOBS=(
   "user-jobs-shared"
+  "user-join-query-job"
   "user-order-job"
   "user-order-query-job"
   "user-tracking-job"
