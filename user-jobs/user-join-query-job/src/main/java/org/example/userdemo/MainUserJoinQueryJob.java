@@ -7,6 +7,7 @@ import userdemo.SqlHelper;
 public class MainUserJoinQueryJob {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
-        SqlHelper.queryJoinGivenMapNames("tracking-map", "order-map", jet);
+        SqlHelper.queryJoinGivenMapNames("tracking-map", "order-map",
+                "user-tracking", "user-order", jet);
     }
 }

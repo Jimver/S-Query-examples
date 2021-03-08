@@ -21,8 +21,8 @@ public class MainQuery {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-        List<String> stateMapNames = hz.getList(TransformStatefulP.STATE_IMAP_NAMES_LIST_NAME);
-        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_IMAP_NAME);
+        Map<String, String> stateMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_LIVE_STATE_IMAP_NAME);
+        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_STATE_IMAP_NAME);
 
         String ssMap1 = snapshotMapNames.get("id1-map");
         String ssMap2 = snapshotMapNames.get("id2-map");

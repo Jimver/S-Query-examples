@@ -8,6 +8,6 @@ import userdemo.SqlHelper;
 public class MainUserOrderQueryJob {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
-        SqlHelper.queryGivenMapName("order-map", jet);
+        SqlHelper.queryGivenMapName("order-map", "user-order", jet, true, false);
     }
 }

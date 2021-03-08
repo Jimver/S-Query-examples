@@ -7,8 +7,7 @@ import java.util.Map;
 public enum Category implements Serializable {
     CLOTHES("clothes"),
     FOOD("food"),
-    TOOLS("tools"),
-    ELECTRONICS("electronics");
+    TOOLS("tools");
 
     private final String label;
     private static final Map<String, Category> BY_LABEL = new HashMap<>();

@@ -8,7 +8,6 @@ public class OrderState implements Serializable {
     public int clothesOrders = 0;
     public int foodOrders = 0;
     public int toolsOrders = 0;
-    public int electronicsOrders = 0;
 
     public int getOrders(Category category) {
         switch (category) {
@@ -18,8 +17,6 @@ public class OrderState implements Serializable {
                 return foodOrders;
             case TOOLS:
                 return toolsOrders;
-            case ELECTRONICS:
-                return electronicsOrders;
             default:
                 throw new IllegalArgumentException("Invalid category: " + category.toString());
         }
@@ -35,9 +32,6 @@ public class OrderState implements Serializable {
                 break;
             case TOOLS:
                 toolsOrders += amount;
-                break;
-            case ELECTRONICS:
-                electronicsOrders += amount;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid category: " + category.toString());

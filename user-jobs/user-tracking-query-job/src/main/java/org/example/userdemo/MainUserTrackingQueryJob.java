@@ -7,6 +7,6 @@ import userdemo.SqlHelper;
 public class MainUserTrackingQueryJob {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
-        SqlHelper.queryGivenMapName("tracking-map", jet);
+        SqlHelper.queryGivenMapName("tracking-map", "user-tracking", jet, true, false);
     }
 }

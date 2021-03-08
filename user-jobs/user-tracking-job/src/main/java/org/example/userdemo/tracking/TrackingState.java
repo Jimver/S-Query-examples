@@ -8,7 +8,6 @@ public class TrackingState implements Serializable {
     public int clothesViews = 0;
     public int foodViews = 0;
     public int toolsViews = 0;
-    public int electronicsViews = 0;
 
     public int getViews(Category category) {
         switch (category) {
@@ -18,8 +17,6 @@ public class TrackingState implements Serializable {
                 return foodViews;
             case TOOLS:
                 return toolsViews;
-            case ELECTRONICS:
-                return electronicsViews;
             default:
                 throw new IllegalArgumentException("Invalid category: " + category.toString());
         }
@@ -35,9 +32,6 @@ public class TrackingState implements Serializable {
                 break;
             case TOOLS:
                 toolsViews++;
-                break;
-            case ELECTRONICS:
-                electronicsViews++;
                 break;
             default:
                 throw new IllegalArgumentException("Invalid category: " + category.toString());
