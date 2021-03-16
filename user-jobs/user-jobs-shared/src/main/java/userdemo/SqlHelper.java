@@ -4,8 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.IAtomicLong;
 import com.hazelcast.cp.ICountDownLatch;
 import com.hazelcast.jet.JetInstance;
-import com.hazelcast.jet.impl.execution.ExecutionContext;
-import com.hazelcast.jet.impl.processor.TransformStatefulP;
+import com.hazelcast.jet.impl.processor.IMapStateHelper;
 import com.hazelcast.sql.SqlColumnMetadata;
 import com.hazelcast.sql.SqlResult;
 import com.hazelcast.sql.SqlRow;
@@ -48,21 +47,20 @@ public class SqlHelper {
         }
     }
 
-    private static DistributedObjectNames getDistObjectNames(String transformName, HazelcastInstance hz) {
-        Map<String, String> stateMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_LIVE_STATE_IMAP_NAME);
-        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_STATE_IMAP_NAME);
-        Map<String, String> snapshotIdNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_ID_IMAP_NAME);
+    private static DistributedObjectNames getDistObjectNames(String transformName, String jobName, HazelcastInstance hz) {
+        Map<String, String> stateMapNames = hz.getMap(IMapStateHelper.VERTEX_TO_LIVE_STATE_IMAP_NAME);
+        Map<String, String> snapshotMapNames = hz.getMap(IMapStateHelper.VERTEX_TO_SS_STATE_IMAP_NAME);
 
         String liveMapName = stateMapNames.get(transformName);
         String ssMapName = snapshotMapNames.get(transformName);
-        String ssIdName = snapshotIdNames.get(transformName);
+        String ssIdName = IMapStateHelper.getSnapshotIdName(jobName);
 
         return new DistributedObjectNames(liveMapName, ssMapName, ssIdName);
     }
 
     private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String transformName, String jobName) {
         IAtomicLong distributedSnapshotId = hz.getCPSubsystem().getAtomicLong(ssIdName);
-        ICountDownLatch clusterCountDownLatch = hz.getCPSubsystem().getCountDownLatch(ExecutionContext.clusterCountdownLatchHelper(jobName));
+        ICountDownLatch clusterCountDownLatch = hz.getCPSubsystem().getCountDownLatch(IMapStateHelper.clusterCountdownLatchHelper(jobName));
         long snapshotId = distributedSnapshotId.get();
         int clusterCountDownLatchState = clusterCountDownLatch.getCount();
         // Use the latest snapshot id - 1 by default
@@ -82,7 +80,7 @@ public class SqlHelper {
     public static void queryGivenMapName(String transformName, String jobName, JetInstance jet, boolean querySs, boolean printType) {
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-        DistributedObjectNames distributedObjectNames = getDistObjectNames(transformName, hz);
+        DistributedObjectNames distributedObjectNames = getDistObjectNames(transformName, jobName, hz);
         String liveMapName = distributedObjectNames.getLiveMapName();
         String ssMapName = distributedObjectNames.getSnapshotMapName();
         String ssIdName = distributedObjectNames.getSnapshotIdName();
@@ -104,12 +102,12 @@ public class SqlHelper {
 
     public static void queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs) {
         HazelcastInstance hz = jet.getHazelcastInstance();
-        DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, hz);
+        DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1, hz);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
         String ssMapName1 = distributedObjectNames1.getSnapshotMapName();
         String ssIdName1 = distributedObjectNames1.getSnapshotIdName();
         long querySnapshotId1 = getQueryableSnapshotId(ssIdName1, hz, transformName1, jobName1);
-        DistributedObjectNames distributedObjectNames2 = getDistObjectNames(transformName2, hz);
+        DistributedObjectNames distributedObjectNames2 = getDistObjectNames(transformName2, jobName2, hz);
         String liveMapName2 = distributedObjectNames2.getLiveMapName();
         String ssMapName2 = distributedObjectNames2.getSnapshotMapName();
         String ssIdName2 = distributedObjectNames2.getSnapshotIdName();
@@ -123,7 +121,7 @@ public class SqlHelper {
                 "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2} AND t2.{5}={3}",
                 queryMap1,
                 queryMap2,
-                querySnapshotId1,
+                querySnapshotId1, // TODO don't use comma notation
                 querySnapshotId2,
                 PARTITION_KEY,
                 SNAPSHOT_ID
