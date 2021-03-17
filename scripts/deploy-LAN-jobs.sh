@@ -14,6 +14,7 @@ JOBS=(
   "stateful-stream-job"
   "two-counter-job"
   "sample-imaps"
+  "benchmark-getter-job"
 )
 
 USER_JOBS=(

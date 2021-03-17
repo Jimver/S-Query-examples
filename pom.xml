@@ -15,6 +15,7 @@
         <module>two-counter-job</module>
         <module>sample-imaps</module>
         <module>user-jobs</module>
+        <module>benchmark-getter-job</module>
     </modules>
 
     <properties>
