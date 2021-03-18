@@ -15,7 +15,7 @@ public class MainUserTrackingJob {
         JobConfig config = new JobConfig();
         config.setName("user-tracking");
         config.setProcessingGuarantee(ProcessingGuarantee.EXACTLY_ONCE);
-        config.setSnapshotIntervalMillis(SECONDS.toMillis(10)); // Snapshot every 10s
+        config.setSnapshotIntervalMillis(SECONDS.toMillis(5)); // Snapshot every 10s
         Pipeline p = Pipeline.create();
         StreamStage<UserEvent> src = p
                 .readFrom(UserEvent.itemStream(1, 10)) // Stream of random UserEvents (2 per second)
@@ -24,7 +24,8 @@ public class MainUserTrackingJob {
                 .groupingKey(UserEvent::getUserName)
                 .mapStateful(
                         // The time the state can live before being evicted
-                        SECONDS.toMillis(10),
+//                        SECONDS.toMillis(10),
+                        0,
                         // Method creating a new state object (for each unique groupingKey)
                         TrackingState::new,
                         // Method that maps a given event and corresponding key to the new output given the state
@@ -34,7 +35,9 @@ public class MainUserTrackingJob {
                             return String.format("Most popular for %s: %s", key, state.mostViews());
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
-                        (state, key, currentWatermark) -> "Evicted key: " + key
+                        (state, key, currentWatermark) -> "Evicted key: " + key,
+                        false,
+                        false
                 ).setName("tracking-map")
                 .writeTo(Sinks.logger());
 

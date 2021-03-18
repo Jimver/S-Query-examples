@@ -3,8 +3,8 @@
 JET_SRC_DIR="/mnt/c/Users/Jim/IdeaProjects/hazelcast-jet"
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 
-REMOTE_HOSTS=(node1 node2)
-REMOTE_USERS=(node1 node2)
+REMOTE_HOSTS=(node1 node2 node3)
+REMOTE_USERS=(node1 node2 node3)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
@@ -18,4 +18,7 @@ for ((i=0;i<HOST_NUM;i++)); do
   scp "$JET_SRC_DIR/hazelcast-jet-distribution/target/${TAR_FILE}.tar.gz" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/"
   # shellcheck disable=SC2029
   ssh "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}" "tar xzvf ${TAR_FILE}.tar.gz"
+  # Copy configs
+  scp "hazelcast.yaml" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/config/"
+  scp "hazelcast-jet.yaml" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/config/"
 done
