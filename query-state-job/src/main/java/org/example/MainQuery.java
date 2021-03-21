@@ -4,6 +4,7 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.jet.Jet;
 import com.hazelcast.jet.JetInstance;
 import com.hazelcast.jet.datamodel.TimestampedItem;
+import com.hazelcast.jet.impl.processor.IMapStateHelper;
 import com.hazelcast.jet.impl.processor.TransformStatefulP;
 import com.hazelcast.map.IMap;
 import com.hazelcast.query.Predicate;
@@ -21,11 +22,8 @@ public class MainQuery {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-        Map<String, String> stateMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_LIVE_STATE_IMAP_NAME);
-        Map<String, String> snapshotMapNames = hz.getMap(TransformStatefulP.VERTEX_TO_SS_STATE_IMAP_NAME);
-
-        String ssMap1 = snapshotMapNames.get("id1-map");
-        String ssMap2 = snapshotMapNames.get("id2-map");
+        String ssMap1 = IMapStateHelper.getSnapshotMapName("id1-map");
+        String ssMap2 = IMapStateHelper.getSnapshotMapName("id2-map");
 
         System.out.println(ssMap1);
         System.out.println(ssMap2);

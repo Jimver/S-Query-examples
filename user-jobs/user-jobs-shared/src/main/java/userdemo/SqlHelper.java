@@ -48,11 +48,8 @@ public class SqlHelper {
     }
 
     private static DistributedObjectNames getDistObjectNames(String transformName, String jobName, HazelcastInstance hz) {
-        Map<String, String> stateMapNames = hz.getMap(IMapStateHelper.VERTEX_TO_LIVE_STATE_IMAP_NAME);
-        Map<String, String> snapshotMapNames = hz.getMap(IMapStateHelper.VERTEX_TO_SS_STATE_IMAP_NAME);
-
-        String liveMapName = stateMapNames.get(transformName);
-        String ssMapName = snapshotMapNames.get(transformName);
+        String liveMapName = IMapStateHelper.getSnapshotMapName(transformName);
+        String ssMapName = IMapStateHelper.getSnapshotMapName(transformName);
         String ssIdName = IMapStateHelper.getSnapshotIdName(jobName);
 
         return new DistributedObjectNames(liveMapName, ssMapName, ssIdName);

@@ -4,7 +4,11 @@ hazelcast-jet:
     jet.idle.cooperative.max.microseconds: 250
     jet.idle.noncooperative.min.microseconds: 50
     jet.idle.noncooperative.max.microseconds: 1000
-    enable.imap.state: true
+    state.live: true
+    state.snapshot: false
+    state.phase: true
+    state.phase.batch: false
+    wait.for.futures: false
   instance:
     # the number of threads Jet creates in its cooperative multithreading pool.
     # The default is Runtime.availableProcessors().

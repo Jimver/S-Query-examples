@@ -18,7 +18,7 @@ public class MainUserTrackingJob {
         config.setSnapshotIntervalMillis(SECONDS.toMillis(5)); // Snapshot every 10s
         Pipeline p = Pipeline.create();
         StreamStage<UserEvent> src = p
-                .readFrom(UserEvent.itemStream(1, 10)) // Stream of random UserEvents (2 per second)
+                .readFrom(UserEvent.itemStream(3, 10)) // Stream of random UserEvents (2 per second)
                 .withNativeTimestamps(SECONDS.toMillis(5)); // Use native timestamps)
         src
                 .groupingKey(UserEvent::getUserName)
@@ -35,9 +35,7 @@ public class MainUserTrackingJob {
                             return String.format("Most popular for %s: %s", key, state.mostViews());
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
-                        (state, key, currentWatermark) -> "Evicted key: " + key,
-                        false,
-                        false
+                        (state, key, currentWatermark) -> "Evicted key: " + key
                 ).setName("tracking-map")
                 .writeTo(Sinks.logger());
 
