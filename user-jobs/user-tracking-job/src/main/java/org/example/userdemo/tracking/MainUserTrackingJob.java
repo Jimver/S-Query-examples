@@ -15,10 +15,10 @@ public class MainUserTrackingJob {
         JobConfig config = new JobConfig();
         config.setName("user-tracking");
         config.setProcessingGuarantee(ProcessingGuarantee.EXACTLY_ONCE);
-        config.setSnapshotIntervalMillis(SECONDS.toMillis(5)); // Snapshot every 10s
+        config.setSnapshotIntervalMillis(SECONDS.toMillis(5)); // Snapshot every 5s
         Pipeline p = Pipeline.create();
         StreamStage<UserEvent> src = p
-                .readFrom(UserEvent.itemStream(3, 10)) // Stream of random UserEvents (2 per second)
+                .readFrom(UserEvent.itemStream(10, 1000)) // Stream of random UserEvents (2 per second)
                 .withNativeTimestamps(SECONDS.toMillis(5)); // Use native timestamps)
         src
                 .groupingKey(UserEvent::getUserName)
@@ -36,7 +36,7 @@ public class MainUserTrackingJob {
                         },
                         // Method that executes when states belonging to a key are evicted by watermarks
                         (state, key, currentWatermark) -> "Evicted key: " + key
-                ).setName("tracking-map")
+                ).setName("view_counter")
                 .writeTo(Sinks.logger());
 
         JetInstance jet = Jet.bootstrappedInstance();

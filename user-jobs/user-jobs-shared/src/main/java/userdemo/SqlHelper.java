@@ -48,8 +48,8 @@ public class SqlHelper {
     }
 
     private static DistributedObjectNames getDistObjectNames(String transformName, String jobName, HazelcastInstance hz) {
-        String liveMapName = IMapStateHelper.getSnapshotMapName(transformName);
-        String ssMapName = IMapStateHelper.getSnapshotMapName(transformName);
+        String liveMapName = IMapStateHelper.getPhaseSnapshotMapName(transformName);
+        String ssMapName = IMapStateHelper.getPhaseSnapshotMapName(transformName);
         String ssIdName = IMapStateHelper.getSnapshotIdName(jobName);
 
         return new DistributedObjectNames(liveMapName, ssMapName, ssIdName);
@@ -57,15 +57,15 @@ public class SqlHelper {
 
     private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String transformName, String jobName) {
         IAtomicLong distributedSnapshotId = hz.getCPSubsystem().getAtomicLong(ssIdName);
-        ICountDownLatch clusterCountDownLatch = hz.getCPSubsystem().getCountDownLatch(IMapStateHelper.clusterCountdownLatchHelper(jobName));
+//        ICountDownLatch clusterCountDownLatch = hz.getCPSubsystem().getCountDownLatch(IMapStateHelper.clusterCountdownLatchHelper(jobName));
         long snapshotId = distributedSnapshotId.get();
-        int clusterCountDownLatchState = clusterCountDownLatch.getCount();
+//        int clusterCountDownLatchState = clusterCountDownLatch.getCount();
         // Use the latest snapshot id - 1 by default
-        long querySnapshotId = Math.max(0, snapshotId - 1);
-        if (clusterCountDownLatchState == 0) {
-            // In case the latest snapshot is finished, use the latest id
-            querySnapshotId = Math.max(0, snapshotId);
-        }
+        long querySnapshotId = Math.max(0, snapshotId);
+//        if (clusterCountDownLatchState == 0) {
+//            // In case the latest snapshot is finished, use the latest id
+//            querySnapshotId = Math.max(0, snapshotId);
+//        }
         System.out.printf("Latest snapshot id for %s: %d, querying: %d%n", transformName, snapshotId, querySnapshotId);
         return querySnapshotId;
     }
