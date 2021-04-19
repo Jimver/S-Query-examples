@@ -46,6 +46,6 @@ fi
 for ((i=0;i<HOST_NUM;i++)); do
   for JAR in "${JARS[@]}"
   do
-    scp "$JET_TEST_DIR/${JAR}" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/lib/"
+    scp "$JET_TEST_DIR/${JAR}" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/lib"
   done
 done

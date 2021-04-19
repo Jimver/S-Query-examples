@@ -16,5 +16,5 @@ if [ "$HOST_NUM" -ne "$USER_NUM" ];then
 fi
 
 for ((i=0;i<HOST_NUM;i++)); do
-  scp "$NEXMARK_SRC_DIR/nexmark-jet/target/${JAR_FILE}.jar" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/lib/"
+  scp "$NEXMARK_SRC_DIR/nexmark-jet/target/${JAR_FILE}.jar" "${REMOTE_USERS[$i]}"@"${REMOTE_HOSTS[$i]}":"/home/${REMOTE_USERS[$i]}/${TAR_FILE}/lib"
 done
