@@ -1,4 +1,4 @@
-package userdemo;
+package org.example;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.IAtomicLong;
@@ -45,7 +45,7 @@ public class SqlHelper {
         }
     }
 
-    private static DistributedObjectNames getDistObjectNames(String transformName, String jobName, HazelcastInstance hz) {
+    private static DistributedObjectNames getDistObjectNames(String transformName, String jobName) {
         String liveMapName = IMapStateHelper.getPhaseSnapshotMapName(transformName);
         String ssMapName = IMapStateHelper.getPhaseSnapshotMapName(transformName);
         String ssIdName = IMapStateHelper.getSnapshotIdName(jobName);
@@ -53,18 +53,12 @@ public class SqlHelper {
         return new DistributedObjectNames(liveMapName, ssMapName, ssIdName);
     }
 
-    private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String transformName, String jobName) {
+    private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String jobName) {
         IAtomicLong distributedSnapshotId = hz.getCPSubsystem().getAtomicLong(ssIdName);
-//        ICountDownLatch clusterCountDownLatch = hz.getCPSubsystem().getCountDownLatch(IMapStateHelper.clusterCountdownLatchHelper(jobName));
         long snapshotId = distributedSnapshotId.get();
-//        int clusterCountDownLatchState = clusterCountDownLatch.getCount();
-        // Use the latest snapshot id - 1 by default
+        // Use the latest complete snapshot id by default
         long querySnapshotId = Math.max(0, snapshotId);
-//        if (clusterCountDownLatchState == 0) {
-//            // In case the latest snapshot is finished, use the latest id
-//            querySnapshotId = Math.max(0, snapshotId);
-//        }
-        System.out.printf("Latest snapshot id for %s: %d, querying: %d%n", transformName, snapshotId, querySnapshotId);
+        System.out.printf("Latest snapshot id for job %s: %d, querying: %d%n", jobName, snapshotId, querySnapshotId);
         return querySnapshotId;
     }
 
@@ -75,12 +69,12 @@ public class SqlHelper {
     public static void queryGivenMapName(String transformName, String jobName, JetInstance jet, boolean querySs, boolean printType) {
         HazelcastInstance hz = jet.getHazelcastInstance();
 
-        DistributedObjectNames distributedObjectNames = getDistObjectNames(transformName, jobName, hz);
+        DistributedObjectNames distributedObjectNames = getDistObjectNames(transformName, jobName);
         String liveMapName = distributedObjectNames.getLiveMapName();
         String ssMapName = distributedObjectNames.getSnapshotMapName();
         String ssIdName = distributedObjectNames.getSnapshotIdName();
 
-        long querySnapshotId = getQueryableSnapshotId(ssIdName, hz, transformName, jobName);
+        long querySnapshotId = getQueryableSnapshotId(ssIdName, hz, jobName);
 
         String queryMap = querySs ? ssMapName : liveMapName;
         String queryString = String.format("SELECT * FROM \"%s\" WHERE snapshotId=%d", queryMap, querySnapshotId);
@@ -97,16 +91,16 @@ public class SqlHelper {
 
     public static void queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs) {
         HazelcastInstance hz = jet.getHazelcastInstance();
-        DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1, hz);
+        DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
         String ssMapName1 = distributedObjectNames1.getSnapshotMapName();
         String ssIdName1 = distributedObjectNames1.getSnapshotIdName();
-        long querySnapshotId1 = getQueryableSnapshotId(ssIdName1, hz, transformName1, jobName1);
-        DistributedObjectNames distributedObjectNames2 = getDistObjectNames(transformName2, jobName2, hz);
+        long querySnapshotId1 = getQueryableSnapshotId(ssIdName1, hz, jobName1);
+        DistributedObjectNames distributedObjectNames2 = getDistObjectNames(transformName2, jobName2);
         String liveMapName2 = distributedObjectNames2.getLiveMapName();
         String ssMapName2 = distributedObjectNames2.getSnapshotMapName();
         String ssIdName2 = distributedObjectNames2.getSnapshotIdName();
-        long querySnapshotId2 = getQueryableSnapshotId(ssIdName2, hz, transformName2, jobName2);
+        long querySnapshotId2 = getQueryableSnapshotId(ssIdName2, hz, jobName2);
 
 
         String queryMap1 = querySs ? ssMapName1 : liveMapName1;

@@ -1,4 +1,4 @@
-package org.example.sources;
+package org.example;
 
 import com.hazelcast.cluster.Address;
 import com.hazelcast.function.BiFunctionEx;
@@ -66,7 +66,18 @@ public class EventSourceP extends AbstractProcessor {
 
     public static StreamSource<Payment> paymentSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds) {
         return eventSource("payments", eventsPerSecond, initialDelayMs,
-                (seq, timestamp) -> new Payment(seq, timestamp, (seq / 3) % numDistinctOrderIds, (short) getRandom(seq, 3)));
+                (seq, timestamp) -> {
+                    short probability = (short) getRandom(seq, 100);
+                    short paymentStatus = Payment.PaymentStatus.ORDERED;
+                    if (probability >= 50) {
+                        if (probability < 90) {
+                            paymentStatus = Payment.PaymentStatus.PAID;
+                        } else {
+                            paymentStatus = Payment.PaymentStatus.REFUNDED;
+                        }
+                    }
+                    return new Payment(seq, timestamp, (seq / 3) % numDistinctOrderIds, paymentStatus);
+                });
     }
 
     public static StreamSource<Order> orderSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds, long maxItems) {

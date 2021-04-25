@@ -14,7 +14,9 @@ import org.HdrHistogram.Histogram;
 import org.example.events.Order;
 import org.example.events.Payment;
 import org.example.state.OrderState;
+import org.example.state.OrderStateSerializer;
 import org.example.state.PaymentState;
+import org.example.state.PaymentStateSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,7 +30,7 @@ import java.util.Properties;
 import static com.hazelcast.jet.datamodel.Tuple2.tuple2;
 import static java.lang.Integer.parseInt;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.example.sources.EventSourceP.simpleTime;
+import static org.example.EventSourceP.simpleTime;
 
 public abstract class BenchmarkBase {
     public static final String PROPS_FILENAME = "order-payments.properties";
@@ -71,8 +73,8 @@ public abstract class BenchmarkBase {
         jobCfg.setName(benchmarkName);
         jobCfg.registerSerializer(Order.class, Order.OrderSerializer.class);
         jobCfg.registerSerializer(Payment.class, Payment.PaymentSerializer.class);
-        jobCfg.registerSerializer(OrderState.class, OrderState.OrderStateSerializer.class);
-        jobCfg.registerSerializer(PaymentState.class, PaymentState.PaymentStateSerializer.class);
+        jobCfg.registerSerializer(OrderState.class, OrderStateSerializer.class);
+        jobCfg.registerSerializer(PaymentState.class, PaymentStateSerializer.class);
         var jet = Jet.bootstrappedInstance();
         try {
             int paymentsPerSecond = parseIntProp(props, PROPS_PAYMENTS_PER_SECOND);

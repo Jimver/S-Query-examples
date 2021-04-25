@@ -26,6 +26,11 @@ USER_JOBS=(
   "user-tracking-query-job"
 )
 
+ORDER_PAYMENT_JOBS=(
+  "order-payment-job"
+  "order-payment-query"
+)
+
 JARS=()
 
 for JOB in "${JOBS[@]}"; do
@@ -35,6 +40,11 @@ done
 
 for JOB in "${USER_JOBS[@]}"; do
   JAR="user-jobs/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
+  JARS+=( "$JAR" )
+done
+
+for JOB in "${ORDER_PAYMENT_JOBS[@]}"; do
+  JAR="order-payment-jobs/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
   JARS+=( "$JAR" )
 done
 
