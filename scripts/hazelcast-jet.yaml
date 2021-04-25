@@ -5,11 +5,13 @@ hazelcast-jet:
     jet.idle.noncooperative.min.microseconds: 50
     jet.idle.noncooperative.max.microseconds: 1000
     state.live: false
+    state.live.async: true
     state.snapshot: false
     state.phase: true
     state.phase.batch: true
     state.phase.batch.watermark: true
     state.blob: false
+    memory.format.object: true
     wait.for.futures: false
   instance:
     # the number of threads Jet creates in its cooperative multithreading pool.

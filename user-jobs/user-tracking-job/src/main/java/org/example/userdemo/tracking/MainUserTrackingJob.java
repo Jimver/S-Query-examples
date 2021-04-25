@@ -15,10 +15,10 @@ public class MainUserTrackingJob {
         JobConfig config = new JobConfig();
         config.setName("user-tracking");
         config.setProcessingGuarantee(ProcessingGuarantee.EXACTLY_ONCE);
-        config.setSnapshotIntervalMillis(SECONDS.toMillis(5)); // Snapshot every 5s
+        config.setSnapshotIntervalMillis(SECONDS.toMillis(2)); // Snapshot every 2s
         Pipeline p = Pipeline.create();
         StreamStage<UserEvent> src = p
-                .readFrom(UserEvent.itemStream(10, 1000)) // Stream of random UserEvents (2 per second)
+                .readFrom(UserEvent.itemStream(10, 1000)) // Stream of random UserEvents (10 per second)
                 .withNativeTimestamps(SECONDS.toMillis(5)); // Use native timestamps)
         src
                 .groupingKey(UserEvent::getUserName)
