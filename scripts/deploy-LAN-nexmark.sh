@@ -4,8 +4,10 @@ NEXMARK_SRC_DIR="/mnt/c/Users/Jim/IdeaProjects/big-data-benchmark"
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 JAR_FILE="nexmark-jet-1.0-SNAPSHOT"
 
-REMOTE_HOSTS=(node1 node2 node3)
-REMOTE_USERS=(node1 node2 node3)
+REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
+REMOTE_USERS=(ubuntu ubuntu ubuntu)
+#REMOTE_HOSTS=(node1 node2 node3)
+#REMOTE_USERS=(node1 node2 node3)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}

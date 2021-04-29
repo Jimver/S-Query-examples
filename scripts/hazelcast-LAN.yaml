@@ -48,9 +48,9 @@ hazelcast:
       tcp-ip:
         enabled: true
         member-list:
-          - 145.100.58.219
-          - 145.100.58.173
-          - 145.100.58.120
+          - 192.168.1.21
+          - 192.168.1.22
+          - 192.168.1.23
       # Uses the AWS API to get a list of candidate IPs to check. access-key
       # and secret-key are needed to access the API and the rest of the
       # parameters work as filtering criteria that narrow down the list of

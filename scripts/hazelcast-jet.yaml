@@ -4,13 +4,13 @@ hazelcast-jet:
     jet.idle.cooperative.max.microseconds: 250
     jet.idle.noncooperative.min.microseconds: 50
     jet.idle.noncooperative.max.microseconds: 1000
-    state.live: true
+    state.live: false
     state.live.async: true
     state.snapshot: false
-    state.phase: true
+    state.phase: false
     state.phase.batch: true
     state.phase.batch.watermark: true
-    state.blob: false
+    state.blob: true
     memory.format.object: true
     wait.for.futures: false
   instance:

@@ -49,6 +49,7 @@ public abstract class BenchmarkBase {
     static final long BENCHMARKING_DONE_REPORT_INTERVAL_MS = SECONDS.toMillis(1);
     static final String BENCHMARK_DONE_MESSAGE = "----------------------benchmarking is done----------------------";
     static final long INITIAL_SOURCE_DELAY_MILLIS = 10;
+    static final long MAX_NEGATIVE_LATENCY = 1000;
 
     private int latencyReportingThresholdMs;
 
@@ -196,10 +197,10 @@ public abstract class BenchmarkBase {
                                  state.set2(timestamp); // state.lastTimestamp = timestamp;
 
                                  long latency = System.currentTimeMillis() - timestamp;
-                                 if (latency == -1) { // very low latencies may be reported as negative due to clock skew
+                                 if (latency < 0 && latency >= -MAX_NEGATIVE_LATENCY) { // very low latencies may be reported as negative due to clock skew
                                      latency = 0;
                                  }
-                                 if (latency < 0) {
+                                 if (latency < -MAX_NEGATIVE_LATENCY) {
                                      throw new RuntimeException("Negative latency: " + latency);
                                  }
                                  long time = simpleTime(timestamp);
