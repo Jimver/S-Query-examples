@@ -7,6 +7,6 @@ public class OrderPaymentQuery {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
         SqlHelper.queryJoinGivenMapNames("order", "payment",
-                "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet);
+                "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, true);
     }
 }

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>order-payment-query</artifactId>
+    <artifactId>order-payment-query-benchmark</artifactId>
 
     <build>
         <plugins>
@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.OrderPaymentQuery</mainClass>
+                            <mainClass>org.example.OrderPaymentQueryBenchmark</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

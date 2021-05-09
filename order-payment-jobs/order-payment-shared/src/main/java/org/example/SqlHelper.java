@@ -53,20 +53,20 @@ public class SqlHelper {
         return new DistributedObjectNames(liveMapName, ssMapName, ssIdName);
     }
 
-    private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String jobName) {
+    private static long getQueryableSnapshotId(String ssIdName, HazelcastInstance hz, String jobName, boolean print) {
         IAtomicLong distributedSnapshotId = hz.getCPSubsystem().getAtomicLong(ssIdName);
         long snapshotId = distributedSnapshotId.get();
         // Use the latest complete snapshot id by default
         long querySnapshotId = Math.max(0, snapshotId);
-        System.out.printf("Latest snapshot id for job %s: %d, querying: %d%n", jobName, snapshotId, querySnapshotId);
+        if (print) System.out.printf("Latest snapshot id for job %s: %d, querying: %d%n", jobName, snapshotId, querySnapshotId);
         return querySnapshotId;
     }
 
-    public static void queryGivenMapName(String transformName, String jobName, JetInstance jet) {
-        queryGivenMapName(transformName, jobName, jet, true, true);
+    public static void queryGivenMapName(String transformName, String jobName, JetInstance jet, boolean print) {
+        queryGivenMapName(transformName, jobName, jet, true, true, print);
     }
 
-    public static void queryGivenMapName(String transformName, String jobName, JetInstance jet, boolean querySs, boolean printType) {
+    public static void queryGivenMapName(String transformName, String jobName, JetInstance jet, boolean querySs, boolean printType, boolean print) {
         HazelcastInstance hz = jet.getHazelcastInstance();
 
         DistributedObjectNames distributedObjectNames = getDistObjectNames(transformName, jobName);
@@ -74,7 +74,7 @@ public class SqlHelper {
         String ssMapName = distributedObjectNames.getSnapshotMapName();
         String ssIdName = distributedObjectNames.getSnapshotIdName();
 
-        long querySnapshotId = getQueryableSnapshotId(ssIdName, hz, jobName);
+        long querySnapshotId = getQueryableSnapshotId(ssIdName, hz, jobName, print);
 
         String queryMap = querySs ? ssMapName : liveMapName;
         String queryString = String.format("SELECT * FROM \"%s\" WHERE snapshotId=%d", queryMap, querySnapshotId);
@@ -85,40 +85,50 @@ public class SqlHelper {
         }
     }
 
-    public static void queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet) {
-        queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true);
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean print) {
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print);
     }
 
-    public static void queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs) {
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs, boolean print) {
         HazelcastInstance hz = jet.getHazelcastInstance();
         DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
         String ssMapName1 = distributedObjectNames1.getSnapshotMapName();
         String ssIdName1 = distributedObjectNames1.getSnapshotIdName();
-        long querySnapshotId1 = getQueryableSnapshotId(ssIdName1, hz, jobName1);
+        long beforeSSId = System.nanoTime();
+        long querySnapshotId1 = getQueryableSnapshotId(ssIdName1, hz, jobName1, print);
+        long afterSSId = System.nanoTime();
         DistributedObjectNames distributedObjectNames2 = getDistObjectNames(transformName2, jobName2);
         String liveMapName2 = distributedObjectNames2.getLiveMapName();
         String ssMapName2 = distributedObjectNames2.getSnapshotMapName();
         String ssIdName2 = distributedObjectNames2.getSnapshotIdName();
-        long querySnapshotId2 = getQueryableSnapshotId(ssIdName2, hz, jobName2);
-
+        long querySnapshotId2 = getQueryableSnapshotId(ssIdName2, hz, jobName2, print);
 
         String queryMap1 = querySs ? ssMapName1 : liveMapName1;
         String queryMap2 = querySs ? ssMapName2 : liveMapName2;
 
         String queryString = MessageFormat.format(
-                "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2} AND t2.{5}={3}",
+                "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
                 queryMap1,
                 queryMap2,
-                querySnapshotId1, // TODO don't use comma notation
+                querySnapshotId1,
                 querySnapshotId2,
                 PARTITION_KEY,
                 SNAPSHOT_ID
         );
-        System.out.println(queryString);
+        if (print) System.out.println(queryString);
 
+        long beforeQuery = System.nanoTime();
         try (SqlResult result = hz.getSql().execute(queryString)) {
-            resultToHeaderAndRows(result, false).forEach(System.out::println);
+            long afterQuery = System.nanoTime();
+            resultToHeaderAndRows(result, false).forEach((s) -> {
+                if (print) System.out.println(s);
+            });
+            return new long[]{afterSSId - beforeSSId, afterQuery - beforeQuery};
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Query failed for some reason
+            return new long[]{afterSSId - beforeSSId, -1};
         }
     }
 

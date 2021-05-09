@@ -12,8 +12,8 @@ public class MainBenchmarkGetterJob {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
-        if (args.length > 1) {
-            for (int i = 1; i < args.length; i++) {
+        if (args.length > 0) {
+            for (int i = 0; i < args.length; i++) {
                 BenchMarkLists lists = getBenchmarkLists(args[i], hz);
                 System.out.printf("%s benchmark list:%n", args[i]);
                 printLists(lists);

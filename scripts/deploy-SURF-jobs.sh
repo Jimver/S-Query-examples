@@ -3,8 +3,8 @@
 JET_TEST_DIR="/mnt/c/Users/Jim/IdeaProjects/jet-test"
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 
-REMOTE_HOSTS=(node1 node2 node3)
-REMOTE_USERS=(node1 node2 node3)
+REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
+REMOTE_USERS=(ubuntu ubuntu ubuntu)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}

@@ -113,10 +113,10 @@ public class SqlHelper {
         String queryMap2 = querySs ? ssMapName2 : liveMapName2;
 
         String queryString = MessageFormat.format(
-                "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2} AND t2.{5}={3}",
+                "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
                 queryMap1,
                 queryMap2,
-                querySnapshotId1, // TODO don't use comma notation
+                querySnapshotId1,
                 querySnapshotId2,
                 PARTITION_KEY,
                 SNAPSHOT_ID

@@ -29,8 +29,8 @@ public class EventSourceP extends AbstractProcessor {
     private static final long SIMPLE_TIME_SPAN_MILLIS = HOURS.toMillis(3);
     private static final long THROUGHPUT_REPORT_PERIOD_NANOS =
             MILLISECONDS.toNanos(SOURCE_THROUGHPUT_REPORTING_PERIOD_MILLIS);
-    private static final long HICCUP_REPORT_THRESHOLD_MILLIS = 10;
-    private static final long WM_LAG_THRESHOLD_MILLIS = 20;
+    private static final long HICCUP_REPORT_THRESHOLD_MILLIS = 50;
+    private static final long WM_LAG_THRESHOLD_MILLIS = 100;
 
     private final long itemsPerSecond;
     private final long startTime;
@@ -80,10 +80,10 @@ public class EventSourceP extends AbstractProcessor {
                 });
     }
 
-    public static StreamSource<Order> orderSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds, long maxItems) {
+    public static StreamSource<Order> orderSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds, long numItemIds) {
         return eventSource("orders", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
-                    long itemId = getRandom(seq, maxItems);
+                    long itemId = getRandom(seq, numItemIds);
                     boolean operation = getRandom(seq, 2) == 0;
                     return new Order(seq, timestamp, (seq / 9) % numDistinctOrderIds, itemId, operation);
                 });

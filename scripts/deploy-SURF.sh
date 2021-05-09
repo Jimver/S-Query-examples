@@ -2,5 +2,5 @@
 
 ./deploy-SURF-jet.sh
 ./deploy-SURF-config.sh
-./deploy-LAN-jobs.sh
-./deploy-LAN-nexmark.sh
+./deploy-SURF-jobs.sh
+./deploy-SURF-nexmark.sh

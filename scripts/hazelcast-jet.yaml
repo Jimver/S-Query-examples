@@ -7,16 +7,17 @@ hazelcast-jet:
     state.live: false
     state.live.async: true
     state.snapshot: false
-    state.phase: false
+    state.phase: true
     state.phase.batch: true
-    state.phase.batch.watermark: true
-    state.blob: true
+    state.phase.batch.watermark: false
+    state.phase.batch.concurrent: false
+    state.blob: false
     memory.format.object: true
     wait.for.futures: false
   instance:
     # the number of threads Jet creates in its cooperative multithreading pool.
     # The default is Runtime.availableProcessors().
-    #cooperative-thread-count:
+    cooperative-thread-count: 3
     # period between flow control packets in milliseconds
     flow-control-period: 100
     # number of backup copies to configure for Hazelcast IMaps used internally in a Jet job
