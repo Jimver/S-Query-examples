@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OrderPaymentQueryBenchmark {
     private static void printLatencies(List<Long> ssidLatencies, List<Long> queryLatencies) {
+        System.out.println();
         System.out.println("SSID latencies");
         System.out.println(ssidLatencies);
         System.out.println("Query latencies");
