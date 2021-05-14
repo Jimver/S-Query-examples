@@ -1,6 +1,6 @@
 hazelcast:
   cp-subsystem:
-    cp-member-count: 5
+    cp-member-count: 3
   # The name of the cluster. All members of a single cluster must have the
   # same cluster name configured and a client connecting to this cluster
   # must use it as well.
@@ -28,7 +28,7 @@ hazelcast:
     # Which network interface to listen on. With "enabled" set to false
     # Jet will listen on all available interfaces.
     interfaces:
-      enabled: false
+      enabled: true
       interfaces:
         - 10.0.*.*
     # Hazelcast Jet has several techniques that simplify the formation of the
@@ -45,14 +45,14 @@ hazelcast:
         multicast-port: 54328
       # This technique doesn't attempt any auto-discovery, you directly list all
       # the candidate IPs to check.
-      tcp-ip:
-        enabled: true
-        member-list:
-          - 145.100.58.219
-          - 145.100.58.173
-          - 145.100.58.120
-          - 145.100.57.207
-          - 145.100.57.203
+#      tcp-ip:
+#        enabled: true
+#        member-list:
+#          - 145.100.58.219
+#          - 145.100.58.173
+#          - 145.100.58.120
+#          - 145.100.57.207
+#          - 145.100.57.203
 #          - 145.100.57.198
 #          - 145.100.57.193
       # Uses the AWS API to get a list of candidate IPs to check. access-key
@@ -63,7 +63,7 @@ hazelcast:
       # This plugin is built into the main Hazelcast Jet JAR found in the
       # distribution package.
       aws:
-        enabled: false
+        enabled: true
 #        access-key: my-access-key
 #        secret-key: my-secret-key
 #        iam-role: dummy

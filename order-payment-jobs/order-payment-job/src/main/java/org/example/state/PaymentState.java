@@ -3,6 +3,7 @@ package org.example.state;
 import static org.example.events.Payment.PaymentStatus.ORDERED;
 import static org.example.events.Payment.PaymentStatus.PAID;
 import static org.example.events.Payment.PaymentStatus.REFUNDED;
+import static org.example.events.Payment.PaymentStatus.FAILED;
 
 public class PaymentState {
     private short paymentStatus;
@@ -26,8 +27,14 @@ public class PaymentState {
      */
     public boolean setPaymentStatus(short paymentStatus) {
         if (this.paymentStatus == ORDERED && paymentStatus == PAID) {
+            boolean fail = Math.random() < 0.05; // 5% chance of failure
+            if (fail) {
+                this.paymentStatus = FAILED;
+                return false;
+            } else {
                 this.paymentStatus = PAID;
                 return true;
+            }
         } else if (this.paymentStatus == PAID && paymentStatus == REFUNDED) {
             this.paymentStatus = REFUNDED;
             return true;

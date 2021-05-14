@@ -8,12 +8,25 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OrderPaymentQueryBenchmark {
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
+
+    private static boolean getLock() {
+        return lock.compareAndSet(false, true);
+    }
+
+    private static void releaseLock() {
+        lock.set(false);
+    }
+
     private static void printLatencies(List<Long> ssidLatencies, List<Long> queryLatencies) {
-        System.out.println();
-        System.out.println("SSID latencies");
-        System.out.println(ssidLatencies);
-        System.out.println("Query latencies");
-        System.out.println(queryLatencies);
+        while(!getLock()) {
+            System.out.println();
+            System.out.println("SSID latencies");
+            System.out.println(ssidLatencies);
+            System.out.println("Query latencies");
+            System.out.println(queryLatencies);
+            releaseLock();
+        }
     }
 
     public static void main(String[] args) {
@@ -45,15 +58,21 @@ public class OrderPaymentQueryBenchmark {
             res = SqlHelper.queryJoinGivenMapNames("order", "payment",
                     "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, false);
             long ssidLatency = res[0];
-            ssidLatencies.add(ssidLatency);
+            while(!getLock()) {
+                ssidLatencies.add(ssidLatency);
+                releaseLock();
+            }
             long queryLatency = res[1];
             if (queryLatency == -1) {
                 System.err.println("Query failed!");
             } else {
-                queryLatencies.add(queryLatency);
+                while(!getLock()) {
+                    queryLatencies.add(queryLatency);
+                    releaseLock();
+                }
             }
             counter++;
-            if (counter % printEvery == 0) {
+            if ((printEvery != -1) && counter % printEvery == 0) {
                 printLatencies(ssidLatencies, queryLatencies);
             }
             try {

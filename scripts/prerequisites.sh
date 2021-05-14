@@ -33,3 +33,12 @@ source /etc/profile.d/java_home.sh
 sudo ufw allow proto tcp from 145.100.56.1/22 to any port 5701
 # NTP server
 sudo ufw allow proto udp from 145.100.56.1/22 to any port 123
+
+# NTP client
+sudo apt-get install -y ntp
+
+#Edit /etc/ntp.conf:
+#server 145.100.58.219
+# Comment out the ntp pool lines
+# Run: sudo systemctl restart ntp
+# Run: sudo ntpq -np

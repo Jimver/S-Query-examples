@@ -17,7 +17,7 @@ hazelcast-jet:
   instance:
     # the number of threads Jet creates in its cooperative multithreading pool.
     # The default is Runtime.availableProcessors().
-    cooperative-thread-count: 6
+    cooperative-thread-count: 12
     # period between flow control packets in milliseconds
     flow-control-period: 100
     # number of backup copies to configure for Hazelcast IMaps used internally in a Jet job
