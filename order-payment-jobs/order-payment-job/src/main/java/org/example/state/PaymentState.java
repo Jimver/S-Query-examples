@@ -33,7 +33,7 @@ public class PaymentState {
             return true;
         }
         if (this.paymentStatus == CHECKOUT && paymentStatus == PAID) {
-            boolean fail = Math.random() < 0.05; // 5% chance of failure
+            boolean fail = Math.random() < 0.30; // 30% chance of failure
             if (fail) {
                 this.paymentStatus = PAYMENT_FAILED;
                 return false;

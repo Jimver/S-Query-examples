@@ -7,11 +7,11 @@ hazelcast-jet:
     state.live: true
     state.live.async: true
     state.snapshot: false
-    state.phase: false
+    state.phase: true
     state.phase.batch: true
     state.phase.batch.watermark: false
     state.phase.batch.concurrent: false
-    state.blob: true
+    state.blob: false
     memory.format.object: true
     wait.for.futures: false
   instance:

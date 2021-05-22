@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import static com.hazelcast.jet.datamodel.Tuple2.tuple2;
 import static com.hazelcast.jet.datamodel.Tuple3.tuple3;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.example.EventSourceP.orderSource;
 import static org.example.EventSourceP.paymentSource;
 
@@ -36,7 +37,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
         // Order processor, outputs: (order size, total price, and timestamp)
         StreamStage<Tuple3<Long, Long, Long>> ordersProcessor = orders.groupingKey(Order::getOrderId)
                 .mapStateful(
-//                        SECONDS.toMillis(1), // 1 second TTL
+//                        SECONDS.toMillis(5), // 5 second TTL
                         OrderState::new,
                         (state, key, order) -> {
                             if (order.getOperation()) {
@@ -48,14 +49,14 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                             }
                             return tuple3(state.getSize(), state.getTotal(), order.timestamp());
                         }
-//                        (state, key, currentWatermark) -> null // Do nothing on evict
+//                        ,(state, key, currentWatermark) -> null // Do nothing on evict
                 )
                 .setName("order");
 
         // Payment processor, outputs: (payment status, timestamp)
         StreamStage<Tuple2<Short, Long>> paymentProcessor = payments.groupingKey(Payment::getOrderId)
                 .mapStateful(
-//                        SECONDS.toMillis(1), // 1 second TTL
+                        SECONDS.toMillis(5), // 5 second TTL
                         PaymentState::new,
                         (state, key, payment) -> {
                             boolean success = state.setPaymentStatus(payment.getPaymentStatus());
@@ -66,7 +67,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
 //                            }
                             return tuple2(state.getPaymentStatus(), payment.timestamp());
                         }
-//                        (state, key, watermark) -> null // Do nothing on evict
+                        ,(state, key, watermark) -> null // Do nothing on evict
                 )
                 .setName("payment");
 
