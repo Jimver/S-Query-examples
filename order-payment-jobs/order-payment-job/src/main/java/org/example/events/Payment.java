@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class Payment extends Event {
     public static final class PaymentStatus {
-        public static final short ORDERED = 0, PAID = 1, REFUNDED = 2, FAILED = 3;
+        public static final short PRE_CHECKOUT = 0, CHECKOUT = 1, PAID = 2, REFUNDED = 3, PAYMENT_FAILED = 4;
     }
 
     private final long orderId;

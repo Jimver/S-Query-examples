@@ -16,11 +16,44 @@ import com.hazelcast.sql.SqlRow;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainQuery {
     public static void main(String[] args) {
         JetInstance jet = Jet.bootstrappedInstance();
         HazelcastInstance hz = jet.getHazelcastInstance();
+        final AtomicBoolean stop = new AtomicBoolean(false);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> stop.set(true)));
+
+        if (args.length == 1) {
+            String queryString = String.format("SELECT * FROM \"%1$s\"", args[0]);
+            try (SqlResult result = hz.getSql().execute(queryString)) {
+                for (SqlRow row : result) {
+                    System.out.println(row.getObject(0).toString());
+                }
+            }
+            return;
+        }
+
+        if (args.length == 2) {
+            String queryString = String.format("SELECT * FROM \"%1$s\"", args[0]);
+            int sleepTime = Integer.parseInt(args[1]);
+            while (!stop.get()) {
+                try (SqlResult result = hz.getSql().execute(queryString)) {
+//                    for (SqlRow row : result) {
+//                        System.out.println(row.getObject(0).toString());
+//                    }
+                }
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    stop.set(true);
+                    e.printStackTrace();
+                }
+            }
+            return;
+        }
 
         String ssMap1 = IMapStateHelper.getSnapshotMapName("id1-map");
         String ssMap2 = IMapStateHelper.getSnapshotMapName("id2-map");

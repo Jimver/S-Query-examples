@@ -1,15 +1,16 @@
 package org.example.state;
 
-import static org.example.events.Payment.PaymentStatus.ORDERED;
+import static org.example.events.Payment.PaymentStatus.PRE_CHECKOUT;
+import static org.example.events.Payment.PaymentStatus.CHECKOUT;
 import static org.example.events.Payment.PaymentStatus.PAID;
 import static org.example.events.Payment.PaymentStatus.REFUNDED;
-import static org.example.events.Payment.PaymentStatus.FAILED;
+import static org.example.events.Payment.PaymentStatus.PAYMENT_FAILED;
 
 public class PaymentState {
     private short paymentStatus;
 
     public PaymentState() {
-        this.paymentStatus = ORDERED;
+        this.paymentStatus = PRE_CHECKOUT;
     }
 
     public PaymentState(short paymentStatus) {
@@ -21,15 +22,20 @@ public class PaymentState {
     }
 
     /**
-     * Set payment status, only valid transitions are ORDERED -> PAID, PAID -> REFUNDED.
+     * Set payment status, only valid transitions are
+     * PRE_CHECKOUT -> CHECKOUT, CHECKOUT -> PAID, CHECKOUT -> PAYMENT_FAILED, PAID -> REFUNDED.
      * @param paymentStatus Payment status to set
      * @return True if successfully set, false otherwise
      */
     public boolean setPaymentStatus(short paymentStatus) {
-        if (this.paymentStatus == ORDERED && paymentStatus == PAID) {
+        if (this.paymentStatus == PRE_CHECKOUT && paymentStatus == CHECKOUT) {
+            this.paymentStatus = CHECKOUT;
+            return true;
+        }
+        if (this.paymentStatus == CHECKOUT && paymentStatus == PAID) {
             boolean fail = Math.random() < 0.05; // 5% chance of failure
             if (fail) {
-                this.paymentStatus = FAILED;
+                this.paymentStatus = PAYMENT_FAILED;
                 return false;
             } else {
                 this.paymentStatus = PAID;
