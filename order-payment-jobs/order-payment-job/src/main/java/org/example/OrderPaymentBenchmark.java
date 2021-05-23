@@ -41,11 +41,15 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                         OrderState::new,
                         (state, key, order) -> {
                             if (order.getOperation()) {
-                                state.incrementSize();
-                                state.deltaTotal(order.getItemId()); // Price is just the item id
+                                state.addItem(order.getItemId());
+//                                System.out.println(String.format("Successfully added item ID %d to order %d", order.getItemId(), order.getOrderId()));
                             } else {
-                                state.decrementSize();
-                                state.deltaTotal(-order.getItemId()); // Negative price
+                                boolean result = state.removeItem(order.getItemId());
+//                                if (result) {
+//                                    System.out.println(String.format("Removed item ID %d from order %d", order.getItemId(), order.getOrderId()));
+//                                } else {
+//                                    System.out.println(String.format("Item ID %d not in order %d", order.getItemId(), order.getOrderId()));
+//                                }
                             }
                             return tuple3(state.getSize(), state.getTotal(), order.timestamp());
                         }

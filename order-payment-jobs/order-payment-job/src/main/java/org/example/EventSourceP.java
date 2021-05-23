@@ -69,11 +69,11 @@ public class EventSourceP extends AbstractProcessor {
                 (seq, timestamp) -> {
                     short probability = (short) getRandom(seq, 100);
                     short paymentStatus;
-                    if (probability <= 90) {
+                    if (probability <= 87) {
                         paymentStatus = Payment.PaymentStatus.PRE_CHECKOUT;
-                    } else if (probability <= 95) {
+                    } else if (probability <= 91) {
                         paymentStatus = Payment.PaymentStatus.CHECKOUT;
-                    } else if (probability <= 98) {
+                    } else if (probability <= 95) {
                         paymentStatus = Payment.PaymentStatus.PAID;
                     } else {
                         paymentStatus = Payment.PaymentStatus.REFUNDED;

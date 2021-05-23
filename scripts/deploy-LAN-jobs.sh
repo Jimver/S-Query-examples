@@ -31,6 +31,7 @@ ORDER_PAYMENT_JOBS=(
   "order-payment-query"
   "order-payment-query-benchmark"
   "order-payment-shared"
+  "generic-query"
 )
 
 JARS=()

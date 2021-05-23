@@ -15,6 +15,7 @@
         <module>order-payment-query</module>
         <module>order-payment-query-benchmark</module>
         <module>order-payment-shared</module>
+        <module>generic-query</module>
     </modules>
 
     <properties>

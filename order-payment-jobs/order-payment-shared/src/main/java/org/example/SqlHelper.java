@@ -86,10 +86,14 @@ public class SqlHelper {
     }
 
     public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean print) {
-        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print);
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print, null);
     }
 
-    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs, boolean print) {
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean print, String[] query) {
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print, query);
+    }
+
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs, boolean print, String[] query) {
         HazelcastInstance hz = jet.getHazelcastInstance();
         DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
@@ -116,6 +120,32 @@ public class SqlHelper {
                 PARTITION_KEY,
                 SNAPSHOT_ID
         );
+        if (query != null) {
+            String selectClause = "t1.*, t2.*";
+            if (!query[0].equals("")) {
+                // First SELECT clause
+                selectClause = query[0];
+            }
+            queryString = MessageFormat.format(
+                    "SELECT {6} FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
+                    queryMap1,
+                    queryMap2,
+                    querySnapshotId1,
+                    querySnapshotId2,
+                    PARTITION_KEY,
+                    SNAPSHOT_ID,
+                    selectClause
+            );
+            if (!query[1].equals("")) {
+                // Second WHERE clause
+                queryString = MessageFormat.format("{0} AND {1}", queryString, query[1]);
+            }
+            if (!query[2].equals("")) {
+                // Third end of query
+                queryString = MessageFormat.format("{0} {1}", queryString, query[2]);
+            }
+
+        }
         if (print) System.out.println(queryString);
 
         long beforeQuery = System.nanoTime();
