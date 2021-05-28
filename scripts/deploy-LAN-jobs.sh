@@ -10,6 +10,7 @@ HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
 
 JOBS=(
+  "query-job"
   "query-state-job"
   "stateful-stream-job"
   "two-counter-job"

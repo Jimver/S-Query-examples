@@ -17,6 +17,7 @@
         <module>user-jobs</module>
         <module>benchmark-getter-job</module>
         <module>order-payment-jobs</module>
+        <module>query-job</module>
     </modules>
 
     <properties>

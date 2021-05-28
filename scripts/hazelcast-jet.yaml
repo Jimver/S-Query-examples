@@ -8,6 +8,7 @@ hazelcast-jet:
     state.live.async: true
     state.snapshot: false
     state.phase: true
+    state.phase.setentries: true
     state.phase.batch: true
     state.phase.batch.watermark: false
     state.phase.batch.concurrent: false
