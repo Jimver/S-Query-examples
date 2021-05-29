@@ -29,7 +29,7 @@ import static com.hazelcast.map.impl.proxy.MapProxySupport.NULL_KEY_IS_NOT_ALLOW
 import static com.hazelcast.map.impl.proxy.MapProxySupport.NULL_VALUE_IS_NOT_ALLOWED;
 
 public class SampleImapsJob {
-    private static final long NUM_EMPLOYEES = 100000L;
+    private static final long NUM_EMPLOYEES = 100L;
     private static long start = 0;
     private static long end = 0;
     private static IMap<Long, Object> sample;
@@ -57,11 +57,22 @@ public class SampleImapsJob {
 
     private static long ageCounter = 0;
 
+    private static void putHash() {
+        ageCounter++;
+        Employee e = new Employee("name"+ageCounter, ageCounter);
+        start = System.nanoTime();
+        tempMap.put(ageCounter, e);
+        end = System.nanoTime();
+        System.out.printf("put time: %d%n", end - start);
+    }
+
     private static void set() {
-//        start = System.nanoTime();
-        sample.set(0L, employees.get(0));
-//        end = System.nanoTime();
-//        System.out.printf("set time: %d%n", end - start);
+        ageCounter++;
+        Employee e = new Employee("name"+ageCounter, ageCounter);
+        start = System.nanoTime();
+        sample.set(ageCounter, e);
+        end = System.nanoTime();
+        System.out.printf("set time: %d%n", end - start);
     }
 
     public static void setAll() {
@@ -71,11 +82,24 @@ public class SampleImapsJob {
         System.out.printf("setAll time: %d%n", end - start);
     }
 
+    public static void putDataHash() {
+        ageCounter++;
+        Employee e = new Employee("name"+ageCounter, ageCounter);
+        Data eData = hz.getSerializationService().toData(e);
+        start = System.nanoTime();
+        tempDataMap.put(ageCounter, eData);
+        end = System.nanoTime();
+        System.out.printf("put data time: %d%n", end - start);
+    }
+
     public static void setData() {
-//        start = System.nanoTime();
-        sampleData.set(0L, employeesData.get(0));
-//        end = System.nanoTime();
-//        System.out.printf("set data time: %d%n", end - start);
+        ageCounter++;
+        Employee e = new Employee("name"+ageCounter, ageCounter);
+        Data eData = hz.getSerializationService().toData(e);
+        start = System.nanoTime();
+        sampleData.set(ageCounter, eData);
+        end = System.nanoTime();
+        System.out.printf("set data time: %d%n", end - start);
     }
 
     public static void setAllData() {
@@ -115,7 +139,7 @@ public class SampleImapsJob {
 
     public static void waitSome() throws InterruptedException {
 //        Thread.sleep(100);
-        populateData();
+//        populateData();
     }
 
     public static void setAllFast(MapProxyImpl imap, MapEntries[] entriesPerPartition) {
@@ -204,53 +228,59 @@ public class SampleImapsJob {
 
         populateData();
 
-        SnapshotIMapKey<Employee> snapshotIMapKey = new SnapshotIMapKey<>(employees.get(0), 1);
-        Data d = hz.getSerializationService().toData(snapshotIMapKey);
-        Data d2 = SnapshotIMapKey.fromData(employeesData.get(0), 1);
-
-        byte[] arr = d.toByteArray();
-        byte[] arr2 = d2.toByteArray();
-
-        System.out.printf("Arr 1 length: %d%n", arr.length);
-        System.out.printf("Arr 2 length: %d%n", arr2.length);
-
-        System.out.println(Arrays.toString(arr));
-        System.out.println(Arrays.toString(arr2));
-        System.out.printf("Partition hash: %d%n", d.getPartitionHash());
-        System.out.printf("Partition hash arr: %d%n", Bits.readInt(arr, 0, true));
-        System.out.printf("Partition hash 2: %d%n", d2.getPartitionHash());
-        System.out.printf("Partition hash arr 2: %d%n", Bits.readInt(arr2, 0, true));
-
-        System.out.printf("Type ID: %d%n", d.getType());
-        System.out.printf("Type ID arr: %d%n", Bits.readInt(arr, 4, true));
-        System.out.printf("Type ID 2: %d%n", d2.getType());
-        System.out.printf("Type ID arr 2: %d%n", Bits.readInt(arr2, 4, true));
-
-        byte[] employeeArr = Arrays.copyOfRange(arr, 8, arr.length - 8);
-        byte[] employeeArr2 = Arrays.copyOfRange(arr2, 8, arr2.length - 8);
-        System.out.println(Arrays.toString(employeeArr));
-        System.out.println(Arrays.toString(employeeArr2));
-//        hz.getSerializationService().readObject()
-        System.out.printf("Snapshot ID: %d%n", Bits.readLong(arr, arr.length - 8, true));
-        System.out.printf("Snapshot ID: %d%n", Bits.readLong(arr2, arr2.length - 8, true));
+//        SnapshotIMapKey<Employee> snapshotIMapKey = new SnapshotIMapKey<>(employees.get(0), 1);
+//        Data d = hz.getSerializationService().toData(snapshotIMapKey);
+//        Data d2 = SnapshotIMapKey.fromData(employeesData.get(0), 1);
+//
+//        byte[] arr = d.toByteArray();
+//        byte[] arr2 = d2.toByteArray();
+//
+//        System.out.printf("Arr 1 length: %d%n", arr.length);
+//        System.out.printf("Arr 2 length: %d%n", arr2.length);
+//
+//        System.out.println(Arrays.toString(arr));
+//        System.out.println(Arrays.toString(arr2));
+//        System.out.printf("Partition hash: %d%n", d.getPartitionHash());
+//        System.out.printf("Partition hash arr: %d%n", Bits.readInt(arr, 0, true));
+//        System.out.printf("Partition hash 2: %d%n", d2.getPartitionHash());
+//        System.out.printf("Partition hash arr 2: %d%n", Bits.readInt(arr2, 0, true));
+//
+//        System.out.printf("Type ID: %d%n", d.getType());
+//        System.out.printf("Type ID arr: %d%n", Bits.readInt(arr, 4, true));
+//        System.out.printf("Type ID 2: %d%n", d2.getType());
+//        System.out.printf("Type ID arr 2: %d%n", Bits.readInt(arr2, 4, true));
+//
+//        byte[] employeeArr = Arrays.copyOfRange(arr, 8, arr.length - 8);
+//        byte[] employeeArr2 = Arrays.copyOfRange(arr2, 8, arr2.length - 8);
+//        System.out.println(Arrays.toString(employeeArr));
+//        System.out.println(Arrays.toString(employeeArr2));
+////        hz.getSerializationService().readObject()
+//        System.out.printf("Snapshot ID: %d%n", Bits.readLong(arr, arr.length - 8, true));
+//        System.out.printf("Snapshot ID: %d%n", Bits.readLong(arr2, arr2.length - 8, true));
 
 
         while(!stop.get()) {
             try {
-//                set();
-//                waitSome();
-//
-//                setData();
-//                waitSome();
+                putHash();
+                waitSome();
 
-//                setAll();
-//                waitSome();
-//
-//                setAllData();
-//                waitSome();
-//
-//                setAllKeyData();
-//                waitSome();
+                putDataHash();
+                waitSome();
+
+                set();
+                waitSome();
+
+                setData();
+                waitSome();
+
+                setAll();
+                waitSome();
+
+                setAllData();
+                waitSome();
+
+                setAllKeyData();
+                waitSome();
 
                 setAllCustom();
                 waitSome();
@@ -263,7 +293,7 @@ public class SampleImapsJob {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-//            stop.set(true);
+            stop.set(true);
         }
 
 
@@ -279,17 +309,20 @@ public class SampleImapsJob {
 //      SELECT "snapshot-id1-map".partitionKey, "snapshot-id1-map".counter, "snapshot-id2-map".partitionKey, "snapshot-id2-map".counter FROM "snapshot-id1-map" JOIN "snapshot-id2-map" ON "snapshot-id1-map".partitionKey="snapshot-id2-map".partitionKey;
 //      SELECT "snapshot-id1-map".partitionKey AS key1, "snapshot-id1-map".counter AS counter1, "snapshot-id2-map".partitionKey AS key2, "snapshot-id2-map".counter AS counter2, ("snapshot-id1-map".counter + "snapshot-id2-map".counter) AS combined FROM "snapshot-id1-map" INNER JOIN "snapshot-id2-map" USING (partitionKey);
 
-//        try (SqlResult result = hz.getSql().execute(
-//                "SELECT customdata.name, customkeydata.name, customdata.age, customkeydata.age FROM customdata JOIN customkeydata ON customdata.name=customkeydata.name")) {
-//            for (SqlRow row : result) {
-//                String name1 = row.getObject(0);
-//                String name2 = row.getObject(1);
-//                long age1 = row.getObject(2);
-//                long age2 = row.getObject(3);
-//
-//                System.out.printf("%s, %s, %d, %d%n", name1, name2, age1, age2);
-//            }
-//        }
+        try (SqlResult result = hz.getSql().execute(
+                "SELECT customdata.name, customkeydata.name, customdata.age, customkeydata.age, sample.name, sample.age AS a3, (customdata.age+customkeydata.age+sample.age) AS ageSum FROM customdata JOIN customkeydata USING(name) JOIN sample ON customdata.name=sample.name")) {
+            for (SqlRow row : result) {
+                String name1 = row.getObject(0);
+                String name2 = row.getObject(1);
+                String name3 = row.getObject(4);
+                long age1 = row.getObject(2);
+                long age2 = row.getObject(3);
+                long age3 = row.getObject(5);
+                long ageSum = row.getObject(6);
+
+                System.out.printf("%s, %s, %s, %d, %d, %d, %d%n", name1, name2, name3, age1, age2, age3, ageSum);
+            }
+        }
     }
 
 }

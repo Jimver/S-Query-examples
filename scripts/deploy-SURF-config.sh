@@ -2,10 +2,10 @@
 
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 
-#REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
-#REMOTE_USERS=(ubuntu ubuntu ubuntu)
-REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3 surf-node4 surf-node5)
-REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
+REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
+REMOTE_USERS=(ubuntu ubuntu ubuntu)
+#REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3 surf-node4 surf-node5)
+#REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
 #REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3 surf-node4 surf-node5 surf-node6 surf-node7)
 #REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu)
 

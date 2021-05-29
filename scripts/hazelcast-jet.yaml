@@ -8,12 +8,14 @@ hazelcast-jet:
     state.live.async: true
     state.snapshot: false
     state.phase: true
+    state.phase.statistics: false
+    state.phase.backup: true
     state.phase.setentries: true
     state.phase.batch: true
     state.phase.batch.watermark: false
     state.phase.batch.concurrent: false
     state.blob: false
-    memory.format.object: true
+    memory.format.object: false
     wait.for.futures: false
   instance:
     # the number of threads Jet creates in its cooperative multithreading pool.

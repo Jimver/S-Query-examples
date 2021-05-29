@@ -6,13 +6,13 @@ JAR_FILE="nexmark-jet-1.0-SNAPSHOT"
 
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3)
 #REMOTE_USERS=(ubuntu ubuntu ubuntu)
-REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5)
-REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
+#REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5)
+#REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7)
 #REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu)
 
-#REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
-#REMOTE_USERS=(ubuntu ubuntu ubuntu)
+REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3)
+REMOTE_USERS=(ubuntu ubuntu ubuntu)
 #REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3 surf-node4 surf-node5)
 #REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
 #REMOTE_HOSTS=(surf-node1 surf-node2 surf-node3 surf-node4 surf-node5 surf-node6 surf-node7)
