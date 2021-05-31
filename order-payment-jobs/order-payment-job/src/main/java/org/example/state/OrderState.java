@@ -61,7 +61,14 @@ public class OrderState {
         }
     }
 
-    HashMap<Long, Short> getItemCount() {
+    public void clear() {
+        this.itemCount.clear();
+        this.total = 0;
+        this.size = 0;
+    }
+
+    public HashMap<Long, Short> getItemCount() {
         return itemCount;
     }
+
 }

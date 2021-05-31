@@ -29,7 +29,7 @@ import static com.hazelcast.map.impl.proxy.MapProxySupport.NULL_KEY_IS_NOT_ALLOW
 import static com.hazelcast.map.impl.proxy.MapProxySupport.NULL_VALUE_IS_NOT_ALLOWED;
 
 public class SampleImapsJob {
-    private static final long NUM_EMPLOYEES = 100L;
+    private static final long NUM_EMPLOYEES = 100_000L;
     private static long start = 0;
     private static long end = 0;
     private static IMap<Long, Object> sample;
@@ -64,6 +64,13 @@ public class SampleImapsJob {
         tempMap.put(ageCounter, e);
         end = System.nanoTime();
         System.out.printf("put time: %d%n", end - start);
+    }
+
+    private static void evictHash() {
+        start = System.nanoTime();
+        sample.evict(ageCounter);
+        end = System.nanoTime();
+        System.out.printf("Evict time: %d%n", end - start);
     }
 
     private static void set() {
@@ -137,9 +144,16 @@ public class SampleImapsJob {
         System.out.printf("setAll custom key data time: %d%n", end - start);
     }
 
+    public static void evictAll() {
+        start = System.nanoTime();
+        custom.evictAll();
+        end = System.nanoTime();
+        System.out.printf("evict all custom time: %d%n", end - start);
+    }
+
     public static void waitSome() throws InterruptedException {
 //        Thread.sleep(100);
-//        populateData();
+        populateData();
     }
 
     public static void setAllFast(MapProxyImpl imap, MapEntries[] entriesPerPartition) {
@@ -261,39 +275,45 @@ public class SampleImapsJob {
 
         while(!stop.get()) {
             try {
-                putHash();
-                waitSome();
-
-                putDataHash();
-                waitSome();
-
-                set();
-                waitSome();
-
-                setData();
-                waitSome();
-
-                setAll();
-                waitSome();
-
-                setAllData();
-                waitSome();
-
-                setAllKeyData();
-                waitSome();
+//                putHash();
+//                waitSome();
+//
+//                putDataHash();
+//                waitSome();
+//
+//                set();
+//                waitSome();
+//
+//                setData();
+//                waitSome();
+//
+//                setAll();
+//                waitSome();
+//
+//                setAllData();
+//                waitSome();
+//
+//                setAllKeyData();
+//                waitSome();
 
                 setAllCustom();
                 waitSome();
 
-                setAllCustomData();
-                waitSome();
+//                setAllCustomData();
+//                waitSome();
+//
+//                setAllCustomKeyData();
+//                waitSome();
+//
+//                evictHash();
+//                waitSome();
 
-                setAllCustomKeyData();
+                evictAll();
                 waitSome();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            stop.set(true);
+//            stop.set(true);
         }
 
 

@@ -1,5 +1,9 @@
 package org.example.state;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.jet.impl.processor.SnapshotIMapKey;
+import com.hazelcast.map.IMap;
+
 import static org.example.events.Payment.PaymentStatus.PRE_CHECKOUT;
 import static org.example.events.Payment.PaymentStatus.CHECKOUT;
 import static org.example.events.Payment.PaymentStatus.PAID;
@@ -25,7 +29,7 @@ public class PaymentState {
      * Set payment status, only valid transitions are
      * PRE_CHECKOUT -> CHECKOUT, CHECKOUT -> PAID, CHECKOUT -> PAYMENT_FAILED, PAID -> REFUNDED.
      * @param paymentStatus Payment status to set
-     * @return True if successfully set, false otherwise
+     * @return True if successfully transitioned, false otherwise
      */
     public boolean setPaymentStatus(short paymentStatus) {
         if (this.paymentStatus == PRE_CHECKOUT && paymentStatus == CHECKOUT) {

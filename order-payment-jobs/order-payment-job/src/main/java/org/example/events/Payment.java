@@ -33,7 +33,7 @@ public class Payment extends Event {
 
         @Override
         public int getTypeId() {
-            return 2;
+            return 3;
         }
 
         @Override

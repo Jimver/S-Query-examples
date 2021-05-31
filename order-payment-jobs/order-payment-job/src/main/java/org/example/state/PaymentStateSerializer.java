@@ -9,7 +9,7 @@ import java.io.IOException;
 public class PaymentStateSerializer implements StreamSerializer<PaymentState> {
     @Override
     public int getTypeId() {
-        return 4;
+        return 6;
     }
 
     @Override

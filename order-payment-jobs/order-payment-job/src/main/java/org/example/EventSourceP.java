@@ -10,7 +10,9 @@ import com.hazelcast.jet.core.ProcessorSupplier;
 import com.hazelcast.jet.core.Watermark;
 import com.hazelcast.jet.pipeline.Sources;
 import com.hazelcast.jet.pipeline.StreamSource;
-import org.example.events.Order;
+import org.example.events.ChangeStock;
+import org.example.events.ChangeOrder;
+import org.example.events.OrderBase;
 import org.example.events.Payment;
 
 import javax.annotation.Nonnull;
@@ -82,12 +84,20 @@ public class EventSourceP extends AbstractProcessor {
                 });
     }
 
-    public static StreamSource<Order> orderSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds, long numItemIds) {
+    public static StreamSource<OrderBase> orderSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds, long numItemIds) {
         return eventSource("orders", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
                     long itemId = getRandom(seq, numItemIds);
                     boolean operation = getRandom(seq, 2) == 0;
-                    return new Order(seq, timestamp, (seq / 9) % numDistinctOrderIds, itemId, operation);
+                    return new ChangeOrder(seq, timestamp, (seq / 9) % numDistinctOrderIds, itemId, operation);
+                });
+    }
+
+    public static StreamSource<ChangeStock> stockSource(long eventsPerSecond, long initialDelayMs, long numDistinctItemIds, short maxStockIncrease) {
+        return eventSource("stock", eventsPerSecond, initialDelayMs,
+                (seq, timestamp) -> {
+                    short refill = (short) getRandom(seq, maxStockIncrease);
+                    return new ChangeStock(seq, timestamp, (seq / 9) % numDistinctItemIds, refill);
                 });
     }
 

@@ -16,6 +16,8 @@ hazelcast:
         class-name: org.example.state.PaymentStateSerializer
       - type-class: org.example.state.OrderState
         class-name: org.example.state.OrderStateSerializer
+      - type-class: org.example.state.StockState
+        class-name: org.example.state.StockStateSerializer
   network:
     port:
       # The preferred port number where the Jet instance will listen. The

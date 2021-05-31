@@ -1,5 +1,6 @@
 package org.example;
 
+import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.function.FunctionEx;
 import com.hazelcast.internal.util.HashUtil;
 import com.hazelcast.jet.Jet;
@@ -11,12 +12,16 @@ import com.hazelcast.jet.pipeline.Pipeline;
 import com.hazelcast.jet.pipeline.Sinks;
 import com.hazelcast.jet.pipeline.StreamStage;
 import org.HdrHistogram.Histogram;
-import org.example.events.Order;
+import org.example.events.ChangeOrder;
+import org.example.events.ChangeStock;
 import org.example.events.Payment;
+import org.example.events.PaymentOrder;
 import org.example.state.OrderState;
 import org.example.state.OrderStateSerializer;
 import org.example.state.PaymentState;
 import org.example.state.PaymentStateSerializer;
+import org.example.state.StockState;
+import org.example.state.StockStateSerializer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,6 +41,7 @@ public abstract class BenchmarkBase {
     public static final String PROPS_FILENAME = "order-payments.properties";
     public static final String PROPS_PAYMENTS_PER_SECOND = "payments-per-second";
     public static final String PROP_NUM_DISTINCT_ITEM_IDS = "num-distinct-item-ids";
+    public static final String PROP_MAX_STOCK_INCREASE = "max-stock-increase";
     public static final String PROP_NUM_DISTINCT_ORDER_IDS = "num-distinct-order-ids";
     public static final String PROP_PROCESSING_GUARANTEE = "processing-guarantee";
     public static final String PROP_SNAPSHOT_INTERVAL_MILLIS = "snapshot-interval-millis";
@@ -72,10 +78,14 @@ public abstract class BenchmarkBase {
         Properties props = loadProps();
         var jobCfg = new JobConfig();
         jobCfg.setName(benchmarkName);
-        jobCfg.registerSerializer(Order.class, Order.OrderSerializer.class);
+        // These serializers are needed for proper cluster operation
         jobCfg.registerSerializer(Payment.class, Payment.PaymentSerializer.class);
+        jobCfg.registerSerializer(PaymentOrder.class, PaymentOrder.PaymentOrderSerializer.class);
+        jobCfg.registerSerializer(ChangeOrder.class, ChangeOrder.ChangeOrderSerializer.class);
+        jobCfg.registerSerializer(ChangeStock.class, ChangeStock.ChangeStockSerializer.class);
         jobCfg.registerSerializer(OrderState.class, OrderStateSerializer.class);
         jobCfg.registerSerializer(PaymentState.class, PaymentStateSerializer.class);
+        jobCfg.registerSerializer(StockState.class, StockStateSerializer.class);
         var jet = Jet.bootstrappedInstance();
         try {
             int paymentsPerSecond = parseIntProp(props, PROPS_PAYMENTS_PER_SECOND);
@@ -114,7 +124,7 @@ public abstract class BenchmarkBase {
             long totalTimeMillis = SECONDS.toMillis(warmupSeconds + measurementSeconds);
 
             var pipeline = Pipeline.create();
-            var latencies = addComputation(pipeline, props);
+            var latencies = addComputation(pipeline, props, jet.getHazelcastInstance());
             latencies.filter(t2 -> t2.f0() < totalTimeMillis)
                      .map(t2 -> String.format("%d,%d", t2.f0(), t2.f1()))
                      .writeTo(Sinks.files(new File(outputPath, "log").getPath()));
@@ -135,7 +145,7 @@ public abstract class BenchmarkBase {
     }
 
     abstract StreamStage<Tuple2<Long, Long>> addComputation(
-            Pipeline pipeline, Properties props
+            Pipeline pipeline, Properties props, HazelcastInstance hz
     ) throws ValidationException;
 
     static Properties loadProps() {

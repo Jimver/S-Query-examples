@@ -11,7 +11,7 @@ import java.util.Map;
 public class OrderStateSerializer implements StreamSerializer<OrderState> {
     @Override
     public int getTypeId() {
-        return 3;
+        return 5;
     }
 
     @Override
