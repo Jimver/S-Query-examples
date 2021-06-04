@@ -40,7 +40,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
         StreamStage<Payment> payments = pipeline
                 .readFrom(paymentSource(paymentsPerSecond, INITIAL_SOURCE_DELAY_MILLIS, numDistinctOrderIds))
                 .withNativeTimestamps(0);
-        StreamStage<ChangeStock> stock = pipeline
+        StreamStage<ChangeStock> stocks = pipeline
                 .readFrom(stockSource(paymentsPerSecond, INITIAL_SOURCE_DELAY_MILLIS, numItemIds, maxStockIncrease))
                 .withNativeTimestamps(0);
 
@@ -106,7 +106,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                 .setName("order");
 
         // Payment processor, outputs: (payment status, timestamp)
-        StreamStage<Tuple3<Long, Long, Long>> stockProcessor = stock.merge(ordersProcessor).groupingKey(ChangeStock::getItemId)
+        StreamStage<Tuple3<Long, Long, Long>> stockProcessor = stocks.merge(ordersProcessor).groupingKey(ChangeStock::getItemId)
                 .mapStateful(
 //                        SECONDS.toMillis(5), // 5 second TTL
                         StockState::new,

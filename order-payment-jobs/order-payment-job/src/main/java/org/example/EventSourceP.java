@@ -94,7 +94,7 @@ public class EventSourceP extends AbstractProcessor {
     }
 
     public static StreamSource<ChangeStock> stockSource(long eventsPerSecond, long initialDelayMs, long numDistinctItemIds, short maxStockIncrease) {
-        return eventSource("stock", eventsPerSecond, initialDelayMs,
+        return eventSource("stocks", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
                     short refill = (short) getRandom(seq, maxStockIncrease);
                     return new ChangeStock(seq, timestamp, (seq / 9) % numDistinctItemIds, refill);
