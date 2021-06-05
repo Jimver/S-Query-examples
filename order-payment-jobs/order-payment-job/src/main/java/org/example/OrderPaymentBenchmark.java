@@ -31,9 +31,11 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
         int numItemIds = parseIntProp(props, PROP_NUM_DISTINCT_ITEM_IDS);
         short maxStockIncrease = (short) parseIntProp(props, PROP_MAX_STOCK_INCREASE);
         int orderChangesPerSecond = paymentsPerSecond * 3;
+        int stockIncreasePerSecond = paymentsPerSecond * 3;
 
         // Generate payments at rate eventPerSecond, each payment refers to orderId = seq / 3
-        // Generate order at rate eventsPerSecond, each order refers to orderId = seq / 9
+        // Generate order at rate eventsPerSecond*3, each order refers to orderId = seq / 9
+        // Generate stock increase events at rate eventsPerSecond*3, each stock event refers to stockId = seq / 9
         StreamStage<OrderBase> orders = pipeline
                 .readFrom(orderSource(orderChangesPerSecond, INITIAL_SOURCE_DELAY_MILLIS, numDistinctOrderIds, numItemIds))
                 .withNativeTimestamps(0);
@@ -41,7 +43,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                 .readFrom(paymentSource(paymentsPerSecond, INITIAL_SOURCE_DELAY_MILLIS, numDistinctOrderIds))
                 .withNativeTimestamps(0);
         StreamStage<ChangeStock> stocks = pipeline
-                .readFrom(stockSource(paymentsPerSecond, INITIAL_SOURCE_DELAY_MILLIS, numItemIds, maxStockIncrease))
+                .readFrom(stockSource(stockIncreasePerSecond, INITIAL_SOURCE_DELAY_MILLIS, numItemIds, maxStockIncrease))
                 .withNativeTimestamps(0);
 
         // Payment processor, outputs: (payment status, timestamp)
