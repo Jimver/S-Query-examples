@@ -29,6 +29,7 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
         int numDistinctOrderIds = parseIntProp(props, PROP_NUM_DISTINCT_ORDER_IDS);
         int paymentsPerSecond = parseIntProp(props, PROPS_PAYMENTS_PER_SECOND);
         int numItemIds = parseIntProp(props, PROP_NUM_DISTINCT_ITEM_IDS);
+        int maxItemsInOrder = parseIntProp(props, PROP_MAX_ITEMS_ORDER);
         short maxStockIncrease = (short) parseIntProp(props, PROP_MAX_STOCK_INCREASE);
         int orderChangesPerSecond = paymentsPerSecond * 3;
         int stockIncreasePerSecond = paymentsPerSecond * 3;
@@ -77,7 +78,9 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                                 // Event is a ChangeOrder
                                 ChangeOrder order = (ChangeOrder) orderBase;
                                 if (order.getOperation()) {
-                                    state.addItem(order.getItemId());
+                                    if (state.getItemCount().size() < maxItemsInOrder || state.getItemCount().containsKey(order.getItemId())) {
+                                        state.addItem(order.getItemId());
+                                    }
 //                                System.out.println(String.format("Successfully added item ID %d to order %d", order.getItemId(), order.getOrderId()));
                                 } else {
                                     boolean result = state.removeItem(order.getItemId());

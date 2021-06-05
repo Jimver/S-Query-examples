@@ -1,9 +1,5 @@
 package org.example.state;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.jet.impl.processor.SnapshotIMapKey;
-import com.hazelcast.map.IMap;
-
 import static org.example.events.Payment.PaymentStatus.PRE_CHECKOUT;
 import static org.example.events.Payment.PaymentStatus.CHECKOUT;
 import static org.example.events.Payment.PaymentStatus.PAID;

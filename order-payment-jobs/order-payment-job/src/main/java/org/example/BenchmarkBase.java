@@ -42,6 +42,7 @@ public abstract class BenchmarkBase {
     public static final String PROPS_PAYMENTS_PER_SECOND = "payments-per-second";
     public static final String PROP_NUM_DISTINCT_ITEM_IDS = "num-distinct-item-ids";
     public static final String PROP_MAX_STOCK_INCREASE = "max-stock-increase";
+    public static final String PROP_MAX_ITEMS_ORDER = "max-items-in-order";
     public static final String PROP_NUM_DISTINCT_ORDER_IDS = "num-distinct-order-ids";
     public static final String PROP_PROCESSING_GUARANTEE = "processing-guarantee";
     public static final String PROP_SNAPSHOT_INTERVAL_MILLIS = "snapshot-interval-millis";
