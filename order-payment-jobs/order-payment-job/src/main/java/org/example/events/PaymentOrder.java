@@ -8,13 +8,17 @@ import com.hazelcast.nio.serialization.StreamSerializer;
 import java.io.IOException;
 
 public class PaymentOrder extends OrderBase {
-    private final boolean success;
+    private final boolean success; // true -> paid, false -> refund
 
     public PaymentOrder(long id, long timestamp, long orderId, boolean success) {
         super(id, timestamp, orderId);
         this.success = success;
     }
 
+    /**
+     * Getter for success.
+     * @return True if order was a success (paid), False if order was a refund
+     */
     public boolean isSuccess() {
         return success;
     }

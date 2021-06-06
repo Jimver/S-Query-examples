@@ -59,8 +59,13 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
 //                            } else {
 //                                System.out.println("set payment status failure");
 //                            }
-                            if (success && state.getPaymentStatus() == Payment.PaymentStatus.PAID) {
-                                return new PaymentOrder(payment.id(), payment.timestamp(), payment.getOrderId(), success);
+                            if (success) {
+                                if (state.getPaymentStatus() == Payment.PaymentStatus.PAID) {
+                                    return new PaymentOrder(payment.id(), payment.timestamp(), payment.getOrderId(), true);
+                                } else if (state.getPaymentStatus() == Payment.PaymentStatus.REFUNDED) {
+                                    return new PaymentOrder(payment.id(), payment.timestamp(), payment.getOrderId(), false);
+                                }
+
                             }
                             return null;
                         }
@@ -93,16 +98,23 @@ public class OrderPaymentBenchmark extends BenchmarkBase {
                             } else if (orderBase instanceof PaymentOrder) {
                                 // Event is a PaymentOrder
                                 PaymentOrder order = (PaymentOrder) orderBase;
+                                Map<Long, Short> items =  state.getItemCount();
+                                ChangeStock[] changes;
                                 if (order.isSuccess()) {
-                                    Map<Long, Short> items =  state.getItemCount();
-                                    ChangeStock[] changes = items.entrySet().stream().map(e -> new ChangeStock(
+                                    changes = items.entrySet().stream().map(e -> new ChangeStock(
                                             orderBase.id(),
                                             orderBase.timestamp(),
                                             e.getKey(),
                                             e.getValue())).toArray(ChangeStock[]::new);
-                                    state.clear();
-                                    return Traversers.traverseArray(changes);
+                                } else {
+                                    changes = items.entrySet().stream().map(e -> new ChangeStock(
+                                            orderBase.id(),
+                                            orderBase.timestamp(),
+                                            e.getKey(),
+                                            (short) -e.getValue())).toArray(ChangeStock[]::new);
+                                    state.clear(); // Reset order after refund
                                 }
+                                return Traversers.traverseArray(changes);
                             }
                             return Traversers.empty();
                         }

@@ -56,7 +56,7 @@ public abstract class BenchmarkBase {
     static final long BENCHMARKING_DONE_REPORT_INTERVAL_MS = SECONDS.toMillis(1);
     static final String BENCHMARK_DONE_MESSAGE = "----------------------benchmarking is done----------------------";
     static final long INITIAL_SOURCE_DELAY_MILLIS = 10;
-    static final long MAX_NEGATIVE_LATENCY = 1000;
+    static final long MAX_NEGATIVE_LATENCY = 100;
 
     private int latencyReportingThresholdMs;
 

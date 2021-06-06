@@ -13,7 +13,7 @@ public class OrderState {
         this.total = 0;
     }
 
-    public OrderState(long size, long total, HashMap itemCount) {
+    public OrderState(long size, long total, HashMap<Long, Short> itemCount) {
         this.size = size;
         this.total = total;
         this.itemCount = itemCount;
@@ -70,5 +70,4 @@ public class OrderState {
     public HashMap<Long, Short> getItemCount() {
         return itemCount;
     }
-
 }
