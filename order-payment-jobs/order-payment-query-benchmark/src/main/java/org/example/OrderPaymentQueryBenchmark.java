@@ -40,6 +40,12 @@ public class OrderPaymentQueryBenchmark {
         if (args.length >= 2) {
             printEvery = Integer.parseInt(args[1]);
         }
+        int limit = -1;
+        String[] queryArgs = new String[]{"", "", ""};
+        if (args.length >= 3) {
+            limit = Integer.parseInt(args[2]);
+            queryArgs[1] = String.format("CAST(t1.partitionKey AS int) < %d", limit);
+        }
 
         long[] res;
         List<Long> ssidLatencies = new ArrayList<>();
@@ -55,8 +61,13 @@ public class OrderPaymentQueryBenchmark {
         int counter = 0;
 
         while(!stop.get()) {
-            res = SqlHelper.queryJoinGivenMapNames("order", "payment",
-                    "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, false);
+            if (limit == -1) {
+                res = SqlHelper.queryJoinGivenMapNames("order", "payment",
+                        "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, false);
+            } else {
+                res = SqlHelper.queryJoinGivenMapNames("order", "payment",
+                        "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, false, queryArgs);
+            }
             long ssidLatency = res[0];
             while(!getLock()) {
                 ssidLatencies.add(ssidLatency);
@@ -75,13 +86,15 @@ public class OrderPaymentQueryBenchmark {
             if ((printEvery != -1) && counter % printEvery == 0) {
                 printLatencies(ssidLatencies, queryLatencies);
             }
-            try {
-                Thread.sleep(queryInterval);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                e.printStackTrace();
-                printLatencies(ssidLatencies, queryLatencies);
-                break;
+            if (queryInterval > 0) {
+                try {
+                    Thread.sleep(queryInterval);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
+                    printLatencies(ssidLatencies, queryLatencies);
+                    break;
+                }
             }
         }
 

@@ -156,8 +156,8 @@ public class SqlHelper {
             });
             return new long[]{afterSSId - beforeSSId, afterQuery - beforeQuery};
         } catch (Exception e) {
-            e.printStackTrace();
             // Query failed for some reason
+            e.printStackTrace();
             return new long[]{afterSSId - beforeSSId, -1};
         }
     }
