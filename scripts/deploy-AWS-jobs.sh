@@ -35,6 +35,7 @@ USER_JOBS=(
 )
 
 ORDER_PAYMENT_JOBS=(
+  "direct-query-job"
   "order-payment-job"
   "order-payment-query"
   "order-payment-query-benchmark"
