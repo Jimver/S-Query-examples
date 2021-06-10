@@ -23,6 +23,6 @@ public class OrderPaymentQuery {
             return;
         }
         SqlHelper.queryJoinGivenMapNames("order", "payment",
-                "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet, true, arguments);
+                "OrderPaymentBenchmark", "OrderPaymentBenchmark", jet.getHazelcastInstance(), true, arguments);
     }
 }

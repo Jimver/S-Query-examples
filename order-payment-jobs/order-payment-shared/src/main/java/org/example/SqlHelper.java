@@ -85,16 +85,15 @@ public class SqlHelper {
         }
     }
 
-    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean print) {
-        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print, null);
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean print) {
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, print, null);
     }
 
-    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean print, String[] query) {
-        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, jet, true, print, query);
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean print, String[] query) {
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, print, query);
     }
 
-    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, JetInstance jet, boolean querySs, boolean print, String[] query) {
-        HazelcastInstance hz = jet.getHazelcastInstance();
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean querySs, boolean print, String[] query) {
         DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
         String ssMapName1 = distributedObjectNames1.getSnapshotMapName();

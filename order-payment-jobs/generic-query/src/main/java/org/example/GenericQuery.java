@@ -32,6 +32,6 @@ public class GenericQuery {
             System.err.println("Invalid amount of arguments, must be either 4, 5, 6, or 7");
             return;
         }
-        SqlHelper.queryJoinGivenMapNames(args[0], args[1], args[2], args[3], jet, true, arguments);
+        SqlHelper.queryJoinGivenMapNames(args[0], args[1], args[2], args[3], jet.getHazelcastInstance(), true, arguments);
     }
 }

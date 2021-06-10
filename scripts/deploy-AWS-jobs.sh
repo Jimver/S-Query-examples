@@ -4,13 +4,13 @@ JET_TEST_DIR="/mnt/c/Users/Jim/IdeaProjects/jet-test"
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 
 REMOTE_HOSTS=(amazon1)
-REMOTE_USERS=(ubuntu)
+REMOTE_USERS=(ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3)
-#REMOTE_USERS=(ubuntu ubuntu ubuntu)
+#REMOTE_USERS=(ec2-user ec2-user ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5)
-#REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu)
+#REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7)
-#REMOTE_USERS=(ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu ubuntu)
+#REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
@@ -22,6 +22,7 @@ JOBS=(
   "two-counter-job"
   "sample-imaps"
   "benchmark-getter-job"
+  "direct-query-job"
 )
 
 USER_JOBS=(

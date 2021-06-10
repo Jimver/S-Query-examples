@@ -16,6 +16,7 @@ JOBS=(
   "two-counter-job"
   "sample-imaps"
   "benchmark-getter-job"
+  "direct-query-job"
 )
 
 USER_JOBS=(
