@@ -1,35 +1,48 @@
 package org.example;
 
 import com.hazelcast.client.HazelcastClient;
-import com.hazelcast.config.Config;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.jet.Jet;
-import com.hazelcast.jet.JetInstance;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class OrderPaymentQueryBenchmark {
-    private static void printLatencies(List<Long> ssidLatencies, List<Long> queryLatencies, long beforeAll) {
-            System.out.println();
-            System.out.println("SSID latencies");
-            System.out.println(ssidLatencies);
-            System.out.println("Query latencies");
-            System.out.println(queryLatencies);
-            System.out.println("Total time");
-            long timeDelta = System.nanoTime() - beforeAll;
-            System.out.println(timeDelta);
-            System.out.println("Total latencies");
-            int size = queryLatencies.size();
-            System.out.println(size);
-            System.out.println("Q/s");
-            System.out.println((double)size/ (timeDelta/1000000000.0));
+    public static <A, B> List<Map.Entry<A, B>> zip(List<A> as, List<B> bs) {
+        if (as.size() != bs.size()) {
+            throw new IllegalArgumentException("List are not equal size");
+        }
+        return IntStream.range(0, as.size())
+                .mapToObj(i -> Map.entry(as.get(i), bs.get(i)))
+                .collect(Collectors.toList());
+    }
+    private static void printLatencies(List<Long> ssidLatencies, List<Long> queryLatencies, long beforeAll, int concurrentThreads) {
+        long timeDelta = System.nanoTime() - beforeAll;
+        System.out.println();
+        System.out.println("SSID latencies");
+        System.out.println(ssidLatencies);
+        System.out.println("Query latencies");
+        System.out.println(queryLatencies);
+        System.out.println("Total time");
+        System.out.println(timeDelta);
+        long rawLatencySum = zip(ssidLatencies, queryLatencies).stream().mapToLong(sAndQ -> (sAndQ.getKey() + sAndQ.getValue())).sum()/concurrentThreads;
+        System.out.println("Total query time");
+        System.out.println(rawLatencySum);
+        System.out.println("Total latencies");
+        int size = queryLatencies.size();
+        System.out.println(size);
+        System.out.println("Q/s total time");
+        System.out.println((double)size/ (timeDelta/1000000000.0));
+        System.out.println("Q/s raw time");
+        System.out.println((double)size/ (rawLatencySum/1000000000.0));
     }
 
     /**
@@ -75,6 +88,7 @@ public class OrderPaymentQueryBenchmark {
                 throw new IllegalArgumentException("Concurrent threads should be 1 or higher or -1!");
             }
         }
+        int finalConcurrentThreads = concurrentThreads;
         // We need final versions of the settings to pass to the threads.
         final int finalLimit = limit;
         final int finalPrintEvery = printEvery;
@@ -87,8 +101,8 @@ public class OrderPaymentQueryBenchmark {
         final AtomicBoolean stop = new AtomicBoolean(false);
 
         long beforeAll = System.nanoTime();
-        ExecutorService threadPool = Executors.newFixedThreadPool(concurrentThreads);
-        for (int i = 0; i < concurrentThreads; i++) {
+        ExecutorService threadPool = Executors.newFixedThreadPool(finalConcurrentThreads);
+        for (int i = 0; i < finalConcurrentThreads; i++) {
             threadPool.submit(() -> {
                 long[] res;
                 while(!stop.get()) {
@@ -109,7 +123,7 @@ public class OrderPaymentQueryBenchmark {
                     }
                     int counterResult = counter.incrementAndGet();
                     if ((finalPrintEvery != -1) && counterResult % finalPrintEvery == 0) {
-                        printLatencies(ssidLatencies, queryLatencies, beforeAll);
+                        printLatencies(ssidLatencies, queryLatencies, beforeAll, finalConcurrentThreads);
                     }
                     if (finalQueryInterval > 0) {
                         try {
@@ -117,7 +131,7 @@ public class OrderPaymentQueryBenchmark {
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             e.printStackTrace();
-                            printLatencies(ssidLatencies, queryLatencies, beforeAll);
+                            printLatencies(ssidLatencies, queryLatencies, beforeAll, finalConcurrentThreads);
                             break;
                         }
                     }
@@ -131,7 +145,7 @@ public class OrderPaymentQueryBenchmark {
             stop.set(true);
             try {
                 boolean success = threadPool.awaitTermination(10, TimeUnit.SECONDS);
-                printLatencies(ssidLatencies, queryLatencies, beforeAll);
+                printLatencies(ssidLatencies, queryLatencies, beforeAll, finalConcurrentThreads);
                 if (!success) {
                     System.err.println("Timeout while awaiting thread termination");
                 }
