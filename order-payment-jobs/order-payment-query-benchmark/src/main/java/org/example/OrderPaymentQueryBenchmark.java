@@ -43,10 +43,6 @@ public class OrderPaymentQueryBenchmark {
      *             4. Concurrent amount of threads to query with, (must be 1 or higher)
      */
     public static void main(String[] args) {
-        // Use below code when submitting as Jet job
-//        JetInstance jet = Jet.bootstrappedInstance();
-//        HazelcastInstance hz = jet.getHazelcastInstance();
-        // use below code when running directly
         HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
         int queryInterval = 1000;
@@ -75,8 +71,8 @@ public class OrderPaymentQueryBenchmark {
         int concurrentThreads = 1;
         if (args.length >= 4) {
             concurrentThreads = Integer.parseInt(args[3]);
-            if (concurrentThreads <= 0) {
-                throw new IllegalArgumentException("Concurrent threads should be 1 or higher!");
+            if (concurrentThreads <= 0 && concurrentThreads != -1) {
+                throw new IllegalArgumentException("Concurrent threads should be 1 or higher or -1!");
             }
         }
         // We need final versions of the settings to pass to the threads.

@@ -9,7 +9,8 @@ hazelcast-jet:
     state.live: false
     state.live.async: false
     state.snapshot: false
-    state.remove.master: false
+    state.snapshotnum: 2
+    state.remove.master: true
     state.phase: true
     state.phase.statistics: false
     state.phase.backup: true
