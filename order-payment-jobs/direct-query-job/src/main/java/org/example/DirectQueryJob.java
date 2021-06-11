@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +40,7 @@ public class DirectQueryJob {
      *             2. Job name
      *             3. Amount of keys to query (nothing or 0 means all)
      *             4. Amount of threads to query with (1 or higher)
-     *             5. For loop or predicate (true=for loop, false=predicate)
+     *             5. getAll or predicate (true=getAll, false=predicate)
      */
     public static void main(String[] args) {
         if (args.length <= 1 || args.length > 5) {
@@ -62,19 +63,19 @@ public class DirectQueryJob {
                 throw new IllegalArgumentException("Amount of threads must be 1 or higher!");
             }
         }
-        boolean forloop = false;
+        boolean getAll = false;
         if (args.length >= 5) {
-            forloop = Boolean.parseBoolean(args[4]);
+            getAll = Boolean.parseBoolean(args[4]);
         }
-        boolean finalForloop = forloop;
+        boolean finalGetAll = getAll;
 
-        String forloopString = "for loop";
-        if (!finalForloop) {
-            forloopString = "predicate";
+        String getAllString = "getAll";
+        if (!finalGetAll) {
+            getAllString = "predicate";
         }
         System.out.printf(
                 "Running query on stateful transform '%s' on job '%s' limited to %d keys on %d threads with %s%n",
-                vertex, job, amountOfKeys, concurrentThreads, forloopString);
+                vertex, job, amountOfKeys, concurrentThreads, getAllString);
 
         ClientConfig config = ClientConfig.load();
         config.getSerializationConfig().addSerializerConfig(new SerializerConfig().setTypeClass(Payment.class).setImplementation(new Payment.PaymentSerializer()));
@@ -91,6 +92,11 @@ public class DirectQueryJob {
         String snapshotIdName = IMapStateHelper.getSnapshotIdName(job);
 
         IMap<SnapshotIMapKey<Long>, Object> imap = hz.getMap(snapshotMapName);
+        if (imap.size() == 0) {
+            System.err.println("Map has 0 items");
+            throw new IllegalArgumentException("Map contains 0 items");
+        }
+
         IAtomicLong snapshotId = hz.getCPSubsystem().getAtomicLong(snapshotIdName);
 
         List<Long> queryLatencies = Collections.synchronizedList(new ArrayList<>());
@@ -109,7 +115,7 @@ public class DirectQueryJob {
                     if (finalAmountOfKeys == 0) {
                         result = imap.values(new SnapshotPredicate(latestSnapshotId));
                     } else {
-                        if (finalForloop) {
+                        if (finalGetAll) {
                             HashSet<SnapshotIMapKey<Long>> keys = new HashSet<>(finalAmountOfKeys);
                             for (long key = 0; key < finalAmountOfKeys; key++) {
                                 keys.add(new SnapshotIMapKey<>(key, latestSnapshotId));
@@ -120,6 +126,16 @@ public class DirectQueryJob {
                         }
                     }
                     long afterGetAll = System.nanoTime();
+                    int size = result.size();
+                    if (size != finalAmountOfKeys) {
+                        String msg = String.format(
+                                "Got unexpected amount of results: %d, expected: %d", size, finalAmountOfKeys);
+                        System.err.println(msg);
+                    }
+                    long nullAmount = result.stream().filter(Objects::isNull).count();
+                    if (nullAmount > 0) {
+                        System.err.println("Got null: " + nullAmount);
+                    }
                     long snapshotDelta = beforeGetAll - beforeSnapshotId;
                     long queryDelta = afterGetAll - beforeGetAll;
                     snapshotIdLatencies.add(snapshotDelta);
@@ -154,13 +170,13 @@ public class DirectQueryJob {
     }
 
     private static void printLatencies(List<Long> snapshotIdLatencies, List<Long> queryLatencies, long beforeAll) {
+        long timeDelta = System.nanoTime() - beforeAll;
         System.out.println();
         System.out.println("SSID latencies");
         System.out.println(snapshotIdLatencies);
         System.out.println("Query latencies");
         System.out.println(queryLatencies);
         System.out.println("Total time");
-        long timeDelta = System.nanoTime() - beforeAll;
         System.out.println(timeDelta);
         System.out.println("Total latencies");
         int size = queryLatencies.size();

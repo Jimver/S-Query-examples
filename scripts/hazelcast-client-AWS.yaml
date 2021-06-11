@@ -24,6 +24,7 @@ hazelcast-client:
     smart-routing: true
     aws:
       enabled: true
+      hz-port: 5701
   connection-strategy:
     connection-retry:
       # how long the client should keep trying connecting to the server
