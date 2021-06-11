@@ -49,6 +49,8 @@ public class OrderPaymentQueryBenchmark {
      * Main method
      * Run from hazelcast/config as working directory:
      * java -cp "../lib/*" org.example.OrderPaymentQueryBenchmark 0 -1 2 10
+     * Writing to file and stdout:
+     * java -cp "../lib/*" org.example.OrderPaymentQueryBenchmark 0 -1 -1 10 2>&1 | tee -i query-100k.txt
      * @param args Array of arguments:
      *             1. Query interval in ms (0 means no pause)
      *             2. print latencies every x queries (-1 means don't print on interval)
