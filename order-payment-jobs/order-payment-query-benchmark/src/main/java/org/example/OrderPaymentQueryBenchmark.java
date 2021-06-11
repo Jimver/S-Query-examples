@@ -63,8 +63,8 @@ public class OrderPaymentQueryBenchmark {
         String[] queryArgs = new String[]{"", "", ""};
         if (args.length >= 3) {
             limit = Integer.parseInt(args[2]);
-            if (limit < 0) {
-                throw new IllegalArgumentException("Query limit should be 0 or higher!");
+            if (limit < 0 && limit != -1) {
+                throw new IllegalArgumentException("Query limit should be 0 or higher or -1!");
             }
             queryArgs[1] = String.format("CAST(t1.partitionKey AS int) < %d AND CAST(t2.partitionKey AS int) < %d", limit, limit);
         }
