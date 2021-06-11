@@ -2,11 +2,9 @@ package org.example;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
-import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.SerializerConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.cp.IAtomicLong;
-import com.hazelcast.internal.serialization.Data;
 import com.hazelcast.jet.impl.processor.IMapStateHelper;
 import com.hazelcast.jet.impl.processor.SnapshotIMapKey;
 import com.hazelcast.map.IMap;
@@ -24,9 +22,8 @@ import org.example.state.StockStateSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -113,15 +110,11 @@ public class DirectQueryJob {
                         result = imap.values(new SnapshotPredicate(latestSnapshotId));
                     } else {
                         if (finalForloop) {
-//                            result = new ArrayList<>(finalAmountOfKeys);
+                            HashSet<SnapshotIMapKey<Long>> keys = new HashSet<>(finalAmountOfKeys);
                             for (long key = 0; key < finalAmountOfKeys; key++) {
-//                                result.add(imap.get(new SnapshotIMapKey<>(key, latestSnapshotId)));
-                                try {
-                                    imap.get(new SnapshotIMapKey<>(key, latestSnapshotId));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                keys.add(new SnapshotIMapKey<>(key, latestSnapshotId));
                             }
+                            result = imap.getAll(keys).values();
                         } else {
                             result = imap.values(new SnapshotRangePredicate(latestSnapshotId, finalAmountOfKeys));
                         }
