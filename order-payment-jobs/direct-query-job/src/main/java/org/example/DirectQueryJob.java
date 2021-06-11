@@ -24,11 +24,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DirectQueryJob {
     /**
@@ -63,6 +66,7 @@ public class DirectQueryJob {
                 throw new IllegalArgumentException("Amount of threads must be 1 or higher!");
             }
         }
+        final int finalConcurrentThreads = concurrentThreads;
         boolean getAll = false;
         if (args.length >= 5) {
             getAll = Boolean.parseBoolean(args[4]);
@@ -75,7 +79,7 @@ public class DirectQueryJob {
         }
         System.out.printf(
                 "Running query on stateful transform '%s' on job '%s' limited to %d keys on %d threads with %s%n",
-                vertex, job, amountOfKeys, concurrentThreads, getAllString);
+                vertex, job, amountOfKeys, finalConcurrentThreads, getAllString);
 
         ClientConfig config = ClientConfig.load();
         config.getSerializationConfig().addSerializerConfig(new SerializerConfig().setTypeClass(Payment.class).setImplementation(new Payment.PaymentSerializer()));
@@ -103,9 +107,9 @@ public class DirectQueryJob {
         List<Long> snapshotIdLatencies = Collections.synchronizedList(new ArrayList<>());
         final AtomicBoolean stop = new AtomicBoolean(false);
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(concurrentThreads);
+        ExecutorService threadPool = Executors.newFixedThreadPool(finalConcurrentThreads);
         long beforeAll = System.nanoTime();
-        for (int i = 0; i < concurrentThreads; i++) {
+        for (int i = 0; i < finalConcurrentThreads; i++) {
             threadPool.submit(() -> {
                 Collection<Object> result;
                 while(!stop.get()) {
@@ -116,11 +120,15 @@ public class DirectQueryJob {
                         result = imap.values(new SnapshotPredicate(latestSnapshotId));
                     } else {
                         if (finalGetAll) {
-                            HashSet<SnapshotIMapKey<Long>> keys = new HashSet<>(finalAmountOfKeys);
-                            for (long key = 0; key < finalAmountOfKeys; key++) {
-                                keys.add(new SnapshotIMapKey<>(key, latestSnapshotId));
+                            if (finalAmountOfKeys == 1) {
+                                result = Collections.singleton(imap.get(new SnapshotIMapKey<>(0L, latestSnapshotId)));
+                            } else {
+                                HashSet<SnapshotIMapKey<Long>> keys = new HashSet<>(finalAmountOfKeys);
+                                for (long key = 0; key < finalAmountOfKeys; key++) {
+                                    keys.add(new SnapshotIMapKey<>(key, latestSnapshotId));
+                                }
+                                result = imap.getAll(keys).values();
                             }
-                            result = imap.getAll(keys).values();
                         } else {
                             result = imap.values(new SnapshotRangePredicate(latestSnapshotId, finalAmountOfKeys));
                         }
@@ -150,7 +158,7 @@ public class DirectQueryJob {
             stop.set(true);
             try {
                 boolean success = threadPool.awaitTermination(10, TimeUnit.SECONDS);
-                printLatencies(snapshotIdLatencies, queryLatencies, beforeAll);
+                printLatencies(snapshotIdLatencies, queryLatencies, beforeAll, finalConcurrentThreads);
                 if (!success) {
                     System.err.println("Timeout while awaiting thread termination");
                 }
@@ -169,7 +177,16 @@ public class DirectQueryJob {
         }
     }
 
-    private static void printLatencies(List<Long> snapshotIdLatencies, List<Long> queryLatencies, long beforeAll) {
+    public static <A, B> List<Map.Entry<A, B>> zip(List<A> as, List<B> bs) {
+        if (as.size() != bs.size()) {
+            throw new IllegalArgumentException("List are not equal size");
+        }
+        return IntStream.range(0, as.size())
+                .mapToObj(i -> Map.entry(as.get(i), bs.get(i)))
+                .collect(Collectors.toList());
+    }
+
+    private static void printLatencies(List<Long> snapshotIdLatencies, List<Long> queryLatencies, long beforeAll, int concurrentThreads) {
         long timeDelta = System.nanoTime() - beforeAll;
         System.out.println();
         System.out.println("SSID latencies");
@@ -178,10 +195,15 @@ public class DirectQueryJob {
         System.out.println(queryLatencies);
         System.out.println("Total time");
         System.out.println(timeDelta);
+        long rawLatencySum = zip(snapshotIdLatencies, queryLatencies).stream().mapToLong(sAndQ -> (sAndQ.getKey() + sAndQ.getValue())).sum()/concurrentThreads;
+        System.out.println("Total query time");
+        System.out.println(rawLatencySum);
         System.out.println("Total latencies");
         int size = queryLatencies.size();
         System.out.println(size);
-        System.out.println("Q/s");
+        System.out.println("Q/s total time");
         System.out.println((double)size/ (timeDelta/1000000000.0));
+        System.out.println("Q/s raw time");
+        System.out.println((double)size/ (rawLatencySum/1000000000.0));
     }
 }
