@@ -37,7 +37,7 @@ public class DirectQueryJob {
     /**
      * Main method.
      * Run from hazelcast-dir/config for all keys on 2 threads:
-     * java -cp "../lib/*" org.example.DirectQueryJob order OrderPaymentBenchmark 0 2
+     * java -cp "../lib/*" org.example.DirectQueryJob order OrderPaymentBenchmark 0 5 true
      * @param args Array of arguments:
      *             1. name of vertex to query snapshot state of
      *             2. Job name
@@ -135,7 +135,7 @@ public class DirectQueryJob {
                     }
                     long afterGetAll = System.nanoTime();
                     int size = result.size();
-                    if (size != finalAmountOfKeys) {
+                    if (size != finalAmountOfKeys && finalAmountOfKeys != 0) {
                         String msg = String.format(
                                 "Got unexpected amount of results: %d, expected: %d", size, finalAmountOfKeys);
                         System.err.println(msg);
