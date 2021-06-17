@@ -37,7 +37,10 @@ public class DirectQueryJob {
     /**
      * Main method.
      * Run from hazelcast-dir/config for all keys on 2 threads:
-     * java -cp "../lib/*" org.example.DirectQueryJob order OrderPaymentBenchmark 0 5 true
+     * java -cp "../lib/*" org.example.DirectQueryJob payment OrderPaymentBenchmark 0 5 true
+     * java -cp "../lib/*" org.example.DirectQueryJob payment OrderPaymentBenchmark 0 180 true 2>&1 | tee -i direct-query-payment-100k-180.txt
+     * java -cp "../lib/*" org.example.DirectQueryJob order OrderPaymentBenchmark 0 180 true 2>&1 | tee -i direct-query-order-100k-180.txt
+     * java -cp "../lib/*" org.example.DirectQueryJob stock OrderPaymentBenchmark 0 180 true 2>&1 | tee -i direct-query-stock-100k-180.txt
      * @param args Array of arguments:
      *             1. name of vertex to query snapshot state of
      *             2. Job name

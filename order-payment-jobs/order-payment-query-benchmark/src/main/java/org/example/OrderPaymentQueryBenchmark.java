@@ -50,7 +50,11 @@ public class OrderPaymentQueryBenchmark {
      * Run from hazelcast/config as working directory:
      * java -cp "../lib/*" org.example.OrderPaymentQueryBenchmark 0 -1 2 10
      * Writing to file and stdout:
-     * java -cp "../lib/*" org.example.OrderPaymentQueryBenchmark 0 -1 -1 10 2>&1 | tee -i query-100k.txt
+     * java -cp "../lib/*" org.example.OrderPaymentQueryBenchmark 0 -1 -1 2 2>&1 | tee -i query-100k-2.txt
+     * Size of query result is:
+     * size(itemCount)=order size * (sizeof(stock_id)+sizeof(count)) = order size * (8+2) = order size * 10
+     * state size * (size(order_id)+size(order_id)+size(size)+size(total)+size(paymentstatus)+size(itemCount)) =
+     * state size * (8+8+8+8+2+(order size*10)) = state size * (34 + order size * 10)
      * @param args Array of arguments:
      *             1. Query interval in ms (0 means no pause)
      *             2. print latencies every x queries (-1 means don't print on interval)
