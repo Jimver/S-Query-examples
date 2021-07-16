@@ -20,7 +20,7 @@ import static org.example.dh.EventSourceP.orderStatusSource;
 import static org.example.dh.EventSourceP.riderLocationSource;
 
 
-public class EFoodBenchmark extends Benchmark {
+public class DHBenchmark extends Benchmark {
     @Override
     StreamStage<Tuple2<Long, Long>> addComputation(Pipeline pipeline, Properties props, HazelcastInstance hz) throws ValidationException {
         int numDistinctOrderIds = parseIntProp(props, PROP_NUM_DISTINCT_ORDER_IDS);

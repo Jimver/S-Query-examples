@@ -60,7 +60,7 @@ public abstract class Benchmark {
     }
 
     public static void main(String[] args) {
-        Benchmark benchmark = new EFoodBenchmark();
+        Benchmark benchmark = new DHBenchmark();
         benchmark.run();
     }
 
