@@ -18,6 +18,7 @@
         <module>benchmark-getter-job</module>
         <module>order-payment-jobs</module>
         <module>query-job</module>
+        <module>dh</module>
     </modules>
 
     <properties>

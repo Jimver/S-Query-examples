@@ -13,8 +13,8 @@ REMOTE_USERS=(ec2-user)
 #REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7)
 #REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
-#REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7 amazon8)
-#REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
+#REMOTE_HOSTS=(amazon0 amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7 amazon8)
+#REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
@@ -46,6 +46,10 @@ ORDER_PAYMENT_JOBS=(
   "generic-query"
 )
 
+DH_JOBS=(
+  "dh-job"
+)
+
 JARS=()
 
 for JOB in "${JOBS[@]}"; do
@@ -60,6 +64,11 @@ done
 
 for JOB in "${ORDER_PAYMENT_JOBS[@]}"; do
   JAR="order-payment-jobs/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
+  JARS+=( "$JAR" )
+done
+
+for JOB in "${DH_JOBS[@]}"; do
+  JAR="dh/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
   JARS+=( "$JAR" )
 done
 

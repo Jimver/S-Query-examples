@@ -40,6 +40,10 @@ ORDER_PAYMENT_JOBS=(
   "generic-query"
 )
 
+DH_JOBS=(
+  "dh-job"
+)
+
 JARS=()
 
 for JOB in "${JOBS[@]}"; do
@@ -54,6 +58,11 @@ done
 
 for JOB in "${ORDER_PAYMENT_JOBS[@]}"; do
   JAR="order-payment-jobs/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
+  JARS+=( "$JAR" )
+done
+
+for JOB in "${DH_JOBS[@]}"; do
+  JAR="dh/$JOB/target/$JOB-1.0-SNAPSHOT.jar"
   JARS+=( "$JAR" )
 done
 

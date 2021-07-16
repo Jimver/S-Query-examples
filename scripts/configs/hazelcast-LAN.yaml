@@ -12,12 +12,18 @@ hazelcast:
 #    whitelist-prefixes: org.example
   serialization:
     serializers:
-      - type-class: org.example.state.PaymentState
-        class-name: org.example.state.PaymentStateSerializer
-      - type-class: org.example.state.OrderState
-        class-name: org.example.state.OrderStateSerializer
-      - type-class: org.example.state.StockState
-        class-name: org.example.state.StockStateSerializer
+      - type-class: org.example.efood.state.OrderInfoState
+        class-name: org.example.efood.state.OrderInfoStateSerializer
+      - type-class: org.example.efood.state.OrderStatusState
+        class-name: org.example.efood.state.OrderStatusStateSerializer
+      - type-class: org.example.efood.state.RiderLocationState
+        class-name: org.example.efood.state.RiderLocationStateSerializer
+#      - type-class: org.example.efood.state.PaymentState
+#        class-name: org.example.efood.state.PaymentStateSerializer
+#      - type-class: org.example.efood.state.OrderState
+#        class-name: org.example.efood.state.OrderStateSerializer
+#      - type-class: org.example.efood.state.StockState
+#        class-name: org.example.efood.state.StockStateSerializer
   network:
     port:
       # The preferred port number where the Jet instance will listen. The
@@ -32,7 +38,7 @@ hazelcast:
     interfaces:
       enabled: false
       interfaces:
-        - 10.0.*.*
+        - 127.0.0.1
     # Hazelcast Jet has several techniques that simplify the formation of the
     # cluster by automatically discovering the other nodes. This config section
     # lists some. Jet will form a cluster only with nodes using the same discovery
@@ -50,13 +56,9 @@ hazelcast:
       tcp-ip:
         enabled: true
         member-list:
-          - 145.100.58.219
-          - 145.100.58.173
-          - 145.100.58.120
-#          - 145.100.57.207
-#          - 145.100.57.203
-#          - 145.100.57.198
-#          - 145.100.57.193
+          - 192.168.1.21
+          - 192.168.1.22
+          - 192.168.1.23
       # Uses the AWS API to get a list of candidate IPs to check. access-key
       # and secret-key are needed to access the API and the rest of the
       # parameters work as filtering criteria that narrow down the list of
@@ -66,14 +68,14 @@ hazelcast:
       # distribution package.
       aws:
         enabled: false
-#        access-key: my-access-key
-#        secret-key: my-secret-key
-#        iam-role: dummy
-#        region: us-west-1
-#        host-header: ec2.amazonaws.com
-#        security-group-name: hazelcast-sg
-#        tag-key: type
-#        tag-value: hz-nodes
+        access-key: my-access-key
+        secret-key: my-secret-key
+        iam-role: dummy
+        region: us-west-1
+        host-header: ec2.amazonaws.com
+        security-group-name: hazelcast-sg
+        tag-key: type
+        tag-value: hz-nodes
       # Uses the GCP API to get a list of candidate IPs to check. For more
       # details go to the plugin's GitHub page:
       # https://github.com/hazelcast/hazelcast-gcp

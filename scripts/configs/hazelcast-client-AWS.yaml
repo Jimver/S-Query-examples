@@ -9,10 +9,10 @@ hazelcast-client:
 #    jarPaths:
 #      - order-payment-job-1.0-SNAPSHOT.jar
 #    classNames:
-#      - org.example.state.OrderState
-#      - org.example.state.OrderState.OrderStateSerializer
-#      - org.example.state.PaymentState
-#      - org.example.state.PaymentState.PaymentStateSerializer
+#      - org.example.efood.state.OrderState
+#      - org.example.efood.state.OrderState.OrderStateSerializer
+#      - org.example.efood.state.PaymentState
+#      - org.example.efood.state.PaymentState.PaymentStateSerializer
   network:
     # List of addresses for the client to try to connect to. All members of
     # a Hazelcast Jet cluster accept client connections.
@@ -27,6 +27,9 @@ hazelcast-client:
     aws:
       enabled: true
       hz-port: 5701
+#      access-key: xxxxx
+#      secret-key: xxxxx
+#      iam-role: hazelcast-ecs-role
   connection-strategy:
     connection-retry:
       # how long the client should keep trying connecting to the server
