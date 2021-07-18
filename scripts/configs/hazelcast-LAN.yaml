@@ -12,18 +12,18 @@ hazelcast:
 #    whitelist-prefixes: org.example
   serialization:
     serializers:
-      - type-class: org.example.efood.state.OrderInfoState
-        class-name: org.example.efood.state.OrderInfoStateSerializer
-      - type-class: org.example.efood.state.OrderStatusState
-        class-name: org.example.efood.state.OrderStatusStateSerializer
-      - type-class: org.example.efood.state.RiderLocationState
-        class-name: org.example.efood.state.RiderLocationStateSerializer
-#      - type-class: org.example.efood.state.PaymentState
-#        class-name: org.example.efood.state.PaymentStateSerializer
-#      - type-class: org.example.efood.state.OrderState
-#        class-name: org.example.efood.state.OrderStateSerializer
-#      - type-class: org.example.efood.state.StockState
-#        class-name: org.example.efood.state.StockStateSerializer
+      - type-class: org.example.dh.state.OrderInfoState
+        class-name: org.example.dh.state.OrderInfoStateSerializer
+      - type-class: org.example.dh.state.OrderStatusState
+        class-name: org.example.dh.state.OrderStatusStateSerializer
+      - type-class: org.example.dh.state.RiderLocationState
+        class-name: org.example.dh.state.RiderLocationStateSerializer
+  #      - type-class: org.example.state.PaymentState
+  #        class-name: org.example.state.PaymentStateSerializer
+  #      - type-class: org.example.state.OrderState
+  #        class-name: org.example.state.OrderStateSerializer
+  #      - type-class: org.example.state.StockState
+  #        class-name: org.example.state.StockStateSerializer
   network:
     port:
       # The preferred port number where the Jet instance will listen. The
