@@ -10,11 +10,11 @@ import java.io.IOException;
 public class OrderInfo extends Event {
     public final long orderId;
     public final double longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone;
-    public final String deliveryZone;
+    public final String deliveryZone, vendorCategory;
     public final long promisedDeliveryTimestamp, committedPickupAtTimestamp;
     public final int preparationTime;
 
-    public OrderInfo(long id, long timestamp, long orderId, double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, long promisedDeliveryTimestamp, long committedPickupAtTimestamp, int preparationTime) {
+    public OrderInfo(long id, long timestamp, long orderId, double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, long promisedDeliveryTimestamp, long committedPickupAtTimestamp, int preparationTime) {
         super(id, timestamp);
         this.orderId = orderId;
         this.longitudeVendor = longitudeVendor;
@@ -23,6 +23,7 @@ public class OrderInfo extends Event {
         this.latitudeCustomer = latitudeCustomer;
         this.longitudeDeliveryZone = longitudeDeliveryZone;
         this.latitudeDeliveryZone = latitudeDeliveryZone;
+        this.vendorCategory = vendorCategory;
         this.promisedDeliveryTimestamp = promisedDeliveryTimestamp;
         this.committedPickupAtTimestamp = committedPickupAtTimestamp;
         this.deliveryZone = deliveryZone;
@@ -42,6 +43,7 @@ public class OrderInfo extends Event {
             out.writeDouble(object.longitudeDeliveryZone);
             out.writeDouble(object.latitudeDeliveryZone);
             out.writeUTF(object.deliveryZone);
+            out.writeUTF(object.vendorCategory);
             out.writeLong(object.promisedDeliveryTimestamp);
             out.writeLong(object.committedPickupAtTimestamp);
             out.writeInt(object.preparationTime);
@@ -58,10 +60,11 @@ public class OrderInfo extends Event {
             double longitudeDeliveryZone = in.readDouble();
             double latitudeDeliveryZone = in.readDouble();
             String deliveryZone = in.readUTF();
+            String vendorCategory = in.readUTF();
             long promisedDeliveryTimestamp = in.readLong();
             long committedPickupAtTimestamp = in.readLong();
             int preparationTime = in.readInt();
-            return new OrderInfo(event.f0(), event.f1(), orderId, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
+            return new OrderInfo(event.f0(), event.f1(), orderId, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
         }
 
         @Override

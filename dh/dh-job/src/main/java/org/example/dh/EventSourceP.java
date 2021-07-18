@@ -10,6 +10,7 @@ import com.hazelcast.jet.core.ProcessorSupplier;
 import com.hazelcast.jet.core.Watermark;
 import com.hazelcast.jet.pipeline.Sources;
 import com.hazelcast.jet.pipeline.StreamSource;
+import org.example.dh.events.Category;
 import org.example.dh.events.OrderInfo;
 import org.example.dh.events.OrderState;
 import org.example.dh.events.OrderStateSerializer;
@@ -87,11 +88,12 @@ public class EventSourceP extends AbstractProcessor {
                     double latitudeCustomer = getRandomDouble(seq, latitude, range);
                     double longitudeDeliveryZone = getRandomDouble(seq, longitude, range);
                     double latitudeDeliveryZone = getRandomDouble(seq, latitude, range);
-                    String deliveryZone = getRandom(seq, 100) + "";
+                    String deliveryZone = getRandom(seq, 10) + "";
+                    String vendorCategory = Category.categories[(int) getRandom(seq, Category.categories.length)];
                     long promisedDeliveryTimestamp = LocalDateTime.now().plus(Duration.of(45, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
                     long committedPickupAtTimestamp = LocalDateTime.now().plus(Duration.of(30, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
                     int preparationTime = (int) getRandom(seq, 10) + 10;
-                    return new OrderInfo(seq, timestamp, seq % numDistinctOrderIds, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
+                    return new OrderInfo(seq, timestamp, seq % numDistinctOrderIds, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
                 });
     }
 
