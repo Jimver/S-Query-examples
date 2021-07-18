@@ -1,7 +1,6 @@
 package org.example.dh.state;
 
-
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class OrderInfoState {
     private double longitudeVendor;
@@ -12,9 +11,9 @@ public class OrderInfoState {
     private double latitudeDeliveryZone;
     private String deliveryZone;
     private String vendorCategory;
-    private LocalDateTime promisedDeliveryTimestamp, committedPickupAtTimestamp;
+    private Date promisedDeliveryTimestamp, committedPickupAtTimestamp;
 
-    public OrderInfoState(double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, LocalDateTime promisedDeliveryTimestamp, LocalDateTime committedPickupAtTimestamp) {
+    public OrderInfoState(double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, Date promisedDeliveryTimestamp, Date committedPickupAtTimestamp) {
         this.longitudeVendor = longitudeVendor;
         this.latitudeVendor = latitudeVendor;
         this.longitudeCustomer = longitudeCustomer;
@@ -63,11 +62,11 @@ public class OrderInfoState {
         return vendorCategory;
     }
 
-    public LocalDateTime getPromisedDeliveryTimestamp() {
+    public Date getPromisedDeliveryTimestamp() {
         return promisedDeliveryTimestamp;
     }
 
-    public LocalDateTime getCommittedPickupAtTimestamp() {
+    public Date getCommittedPickupAtTimestamp() {
         return committedPickupAtTimestamp;
     }
 
@@ -103,11 +102,11 @@ public class OrderInfoState {
         this.vendorCategory = vendorCategory;
     }
 
-    public void setPromisedDeliveryTimestamp(LocalDateTime promisedDeliveryTimestamp) {
+    public void setPromisedDeliveryTimestamp(Date promisedDeliveryTimestamp) {
         this.promisedDeliveryTimestamp = promisedDeliveryTimestamp;
     }
 
-    public void setCommittedPickupAtTimestamp(LocalDateTime committedPickupAtTimestamp) {
+    public void setCommittedPickupAtTimestamp(Date committedPickupAtTimestamp) {
         this.committedPickupAtTimestamp = committedPickupAtTimestamp;
     }
 }
