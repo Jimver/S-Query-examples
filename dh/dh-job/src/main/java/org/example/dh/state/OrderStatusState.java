@@ -7,16 +7,21 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class OrderStatusState {
+    private static final long LATE_MINUTES = 10;
+
     private String orderState;
     private LocalDateTime updateTimestamp;
+    private LocalDateTime lateTimestamp;
 
     public OrderStatusState(String orderState, LocalDateTime updateTimestamp) {
         this.orderState = orderState;
         this.updateTimestamp = updateTimestamp;
+        this.lateTimestamp = updateTimestamp.plusMinutes(LATE_MINUTES);
     }
 
     public OrderStatusState() {
         updateTimestamp = LocalDateTime.now(); // Prevent nullpointer exception on serialization
+        this.lateTimestamp = updateTimestamp.plusMinutes(LATE_MINUTES);
     }
 
     public String getOrderState() {
@@ -25,6 +30,10 @@ public class OrderStatusState {
 
     public LocalDateTime getUpdateTimestamp() {
         return updateTimestamp;
+    }
+
+    public LocalDateTime getLateTimestamp() {
+        return lateTimestamp;
     }
 
     /**
@@ -92,6 +101,7 @@ public class OrderStatusState {
     public void updateOrderState(String orderState, long updateTimestamp) {
         if (trySetOrderState(orderState)) {
             this.updateTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(updateTimestamp), ZoneId.systemDefault());
+            this.lateTimestamp = this.updateTimestamp.plusMinutes(LATE_MINUTES);
         }
     }
 }
