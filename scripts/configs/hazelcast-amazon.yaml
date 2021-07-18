@@ -38,7 +38,8 @@ hazelcast:
     interfaces:
       enabled: true
       interfaces:
-        - 172.31.*.*
+#        - 172.31.*.* # DH AWS acc
+        - 10.0.*.* # Jim AWS acc
     # Hazelcast Jet has several techniques that simplify the formation of the
     # cluster by automatically discovering the other nodes. This config section
     # lists some. Jet will form a cluster only with nodes using the same discovery
