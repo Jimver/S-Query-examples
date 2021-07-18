@@ -12,7 +12,9 @@ import org.example.dh.state.OrderInfoState;
 import org.example.dh.state.RiderLocationState;
 import org.example.dh.state.OrderStatusState;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
 
 import static org.example.dh.EventSourceP.orderInfoSource;
@@ -52,9 +54,9 @@ public class DHBenchmark extends Benchmark {
                             state.setLongitudeDeliveryZone(orderInfo.longitudeDeliveryZone);
                             state.setLatitudeDeliveryZone(orderInfo.latitudeDeliveryZone);
                             state.setDeliveryZone(orderInfo.deliveryZone);
-                            state.setPromisedDeliveryTimestamp(new Date(orderInfo.promisedDeliveryTimestamp));
-                            state.setCommittedPickupAtTimestamp(new Date(orderInfo.committedPickupAtTimestamp));
-                            state.setPreparationTime(orderInfo.preparationTime);
+                            state.setVendorCategory(orderInfo.vendorCategory);
+                            state.setPromisedDeliveryTimestamp(LocalDateTime.ofInstant(Instant.ofEpochMilli(orderInfo.promisedDeliveryTimestamp), ZoneId.systemDefault()));
+                            state.setCommittedPickupAtTimestamp(LocalDateTime.ofInstant(Instant.ofEpochMilli(orderInfo.committedPickupAtTimestamp), ZoneId.systemDefault()));
                             return (Event)orderInfo;
                         }
 //                        ,(state, key, watermark) -> null // Do nothing on evict
@@ -67,7 +69,7 @@ public class DHBenchmark extends Benchmark {
 //                        SECONDS.toMillis(5), // 5 second TTL
                         RiderLocationState::new,
                         (state, key, riderLocation) -> {
-                           state.setUpdateTimestamp(new Date(riderLocation.getUpdateTimestamp()));
+                           state.setUpdateTimestamp(LocalDateTime.ofInstant(Instant.ofEpochMilli(riderLocation.getUpdateTimestamp()), ZoneId.systemDefault()));
                            state.setLongitude(riderLocation.getLongitude());
                            state.setLatitude(riderLocation.getLatitude());
                            return (Event)riderLocation;
@@ -82,7 +84,7 @@ public class DHBenchmark extends Benchmark {
 //                        SECONDS.toMillis(5), // 5 second TTL
                         OrderStatusState::new,
                         (state, key, orderStatus) -> {
-                            state.setOrderState(orderStatus.getOrderState());
+                            state.updateOrderState(orderStatus.getOrderState(), orderStatus.getUpdateTimestamp());
                             return (Event)orderStatus;
                         }
 //                        ,(state, key, watermark) -> null // Do nothing on evict

@@ -1,7 +1,7 @@
 package org.example.dh.state;
 
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class OrderInfoState {
     private double longitudeVendor;
@@ -11,20 +11,20 @@ public class OrderInfoState {
     private double longitudeDeliveryZone;
     private double latitudeDeliveryZone;
     private String deliveryZone;
-    private Date promisedDeliveryTimestamp, committedPickupAtTimestamp;
-    private int preparationTime;
+    private String vendorCategory;
+    private LocalDateTime promisedDeliveryTimestamp, committedPickupAtTimestamp;
 
-    public OrderInfoState(double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, Date promisedDeliveryTimestamp, Date committedPickupAtTimestamp, int preparationTime) {
+    public OrderInfoState(double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, LocalDateTime promisedDeliveryTimestamp, LocalDateTime committedPickupAtTimestamp) {
         this.longitudeVendor = longitudeVendor;
         this.latitudeVendor = latitudeVendor;
         this.longitudeCustomer = longitudeCustomer;
         this.latitudeCustomer = latitudeCustomer;
         this.longitudeDeliveryZone = longitudeDeliveryZone;
         this.latitudeDeliveryZone = latitudeDeliveryZone;
+        this.vendorCategory = vendorCategory;
         this.promisedDeliveryTimestamp = promisedDeliveryTimestamp;
         this.committedPickupAtTimestamp = committedPickupAtTimestamp;
         this.deliveryZone = deliveryZone;
-        this.preparationTime = preparationTime;
     }
 
     public OrderInfoState() {
@@ -59,16 +59,16 @@ public class OrderInfoState {
         return deliveryZone;
     }
 
-    public Date getPromisedDeliveryTimestamp() {
+    public String getVendorCategory() {
+        return vendorCategory;
+    }
+
+    public LocalDateTime getPromisedDeliveryTimestamp() {
         return promisedDeliveryTimestamp;
     }
 
-    public Date getCommittedPickupAtTimestamp() {
+    public LocalDateTime getCommittedPickupAtTimestamp() {
         return committedPickupAtTimestamp;
-    }
-
-    public int getPreparationTime() {
-        return preparationTime;
     }
 
     public void setLongitudeVendor(double longitudeVendor) {
@@ -99,15 +99,15 @@ public class OrderInfoState {
         this.deliveryZone = deliveryZone;
     }
 
-    public void setPromisedDeliveryTimestamp(Date promisedDeliveryTimestamp) {
+    public void setVendorCategory(String vendorCategory) {
+        this.vendorCategory = vendorCategory;
+    }
+
+    public void setPromisedDeliveryTimestamp(LocalDateTime promisedDeliveryTimestamp) {
         this.promisedDeliveryTimestamp = promisedDeliveryTimestamp;
     }
 
-    public void setCommittedPickupAtTimestamp(Date committedPickupAtTimestamp) {
+    public void setCommittedPickupAtTimestamp(LocalDateTime committedPickupAtTimestamp) {
         this.committedPickupAtTimestamp = committedPickupAtTimestamp;
-    }
-
-    public void setPreparationTime(int preparationTime) {
-        this.preparationTime = preparationTime;
     }
 }

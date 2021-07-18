@@ -13,7 +13,6 @@ import com.hazelcast.jet.pipeline.StreamSource;
 import org.example.dh.events.Category;
 import org.example.dh.events.OrderInfo;
 import org.example.dh.events.OrderState;
-import org.example.dh.events.OrderStateSerializer;
 import org.example.dh.events.OrderStatus;
 import org.example.dh.events.RiderLocation;
 
@@ -23,7 +22,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 import static com.hazelcast.jet.impl.JetEvent.jetEvent;
 import static java.util.concurrent.TimeUnit.HOURS;
@@ -46,6 +44,8 @@ public class EventSourceP extends AbstractProcessor {
     private static final double longitude = 51.923686;
     private static final double latitude = 4.477015;
     private static final double range = 0.05;
+    private static final long updateTimeRange = 1000 * 60 * 20; // 20 minutes (in ms)
+    private static final long updateTimeOffset = updateTimeRange / 2;
 
     private final long itemsPerSecond;
     private final long startTime;
@@ -92,15 +92,14 @@ public class EventSourceP extends AbstractProcessor {
                     String vendorCategory = Category.categories[(int) getRandom(seq, Category.categories.length)];
                     long promisedDeliveryTimestamp = LocalDateTime.now().plus(Duration.of(45, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
                     long committedPickupAtTimestamp = LocalDateTime.now().plus(Duration.of(30, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-                    int preparationTime = (int) getRandom(seq, 10) + 10;
-                    return new OrderInfo(seq, timestamp, seq % numDistinctOrderIds, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
+                    return new OrderInfo(seq, timestamp, seq % numDistinctOrderIds, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp);
                 });
     }
 
     public static StreamSource<RiderLocation> riderLocationSource(long eventsPerSecond, long initialDelayMs, long numDistinctOrderIds) {
         return eventSource("rider-location", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
-                    long updateTimestamp = new Date().getTime();
+                    long updateTimestamp = System.currentTimeMillis();
                     double longitudeRider = getRandomDouble(seq, longitude, range);
                     double latitudeRider = getRandomDouble(seq, latitude, range);
                     return new RiderLocation(seq, timestamp, (seq / 10) % numDistinctOrderIds, updateTimestamp, longitudeRider, latitudeRider);
@@ -110,8 +109,9 @@ public class EventSourceP extends AbstractProcessor {
     public static StreamSource<OrderStatus> orderStatusSource(long eventsPerSecond, long initialDelayMs, long numDistinctItemIds) {
         return eventSource("order-status", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
-                    OrderState orderState = OrderStateSerializer.fromInt((int)getRandom(seq, 11));
-                    return new OrderStatus(seq, timestamp, (seq / 10) % numDistinctItemIds, orderState);
+                    String orderState = OrderState.STATES[(int)getRandom(seq, 11)];
+                    long updateTimestamp = System.currentTimeMillis() - updateTimeOffset + getRandom(seq, updateTimeRange); // Generate timestamp uniformly in [cur - 10 min., cur + 10 min.]
+                    return new OrderStatus(seq, timestamp, (seq / 10) % numDistinctItemIds, orderState, updateTimestamp);
                 });
     }
 

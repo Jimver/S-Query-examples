@@ -12,9 +12,8 @@ public class OrderInfo extends Event {
     public final double longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone;
     public final String deliveryZone, vendorCategory;
     public final long promisedDeliveryTimestamp, committedPickupAtTimestamp;
-    public final int preparationTime;
 
-    public OrderInfo(long id, long timestamp, long orderId, double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, long promisedDeliveryTimestamp, long committedPickupAtTimestamp, int preparationTime) {
+    public OrderInfo(long id, long timestamp, long orderId, double longitudeVendor, double latitudeVendor, double longitudeCustomer, double latitudeCustomer, double longitudeDeliveryZone, double latitudeDeliveryZone, String deliveryZone, String vendorCategory, long promisedDeliveryTimestamp, long committedPickupAtTimestamp) {
         super(id, timestamp);
         this.orderId = orderId;
         this.longitudeVendor = longitudeVendor;
@@ -27,7 +26,6 @@ public class OrderInfo extends Event {
         this.promisedDeliveryTimestamp = promisedDeliveryTimestamp;
         this.committedPickupAtTimestamp = committedPickupAtTimestamp;
         this.deliveryZone = deliveryZone;
-        this.preparationTime = preparationTime;
     }
 
     public static class OrderInfoSerializer implements StreamSerializer<OrderInfo> {
@@ -46,7 +44,6 @@ public class OrderInfo extends Event {
             out.writeUTF(object.vendorCategory);
             out.writeLong(object.promisedDeliveryTimestamp);
             out.writeLong(object.committedPickupAtTimestamp);
-            out.writeInt(object.preparationTime);
         }
 
         @Override
@@ -63,8 +60,7 @@ public class OrderInfo extends Event {
             String vendorCategory = in.readUTF();
             long promisedDeliveryTimestamp = in.readLong();
             long committedPickupAtTimestamp = in.readLong();
-            int preparationTime = in.readInt();
-            return new OrderInfo(event.f0(), event.f1(), orderId, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp, preparationTime);
+            return new OrderInfo(event.f0(), event.f1(), orderId, longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp);
         }
 
         @Override

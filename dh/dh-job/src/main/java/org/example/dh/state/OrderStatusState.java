@@ -2,18 +2,29 @@ package org.example.dh.state;
 
 import org.example.dh.events.OrderState;
 
-public class OrderStatusState {
-    private OrderState orderState;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-    public OrderStatusState(OrderState orderState) {
+public class OrderStatusState {
+    private String orderState;
+    private LocalDateTime updateTimestamp;
+
+    public OrderStatusState(String orderState, LocalDateTime updateTimestamp) {
         this.orderState = orderState;
+        this.updateTimestamp = updateTimestamp;
     }
 
     public OrderStatusState() {
+        updateTimestamp = LocalDateTime.now(); // Prevent nullpointer exception on serialization
     }
 
-    public OrderState getOrderState() {
+    public String getOrderState() {
         return orderState;
+    }
+
+    public LocalDateTime getUpdateTimestamp() {
+        return updateTimestamp;
     }
 
     /**
@@ -24,47 +35,63 @@ public class OrderStatusState {
      * @param orderState Order state to transition to
      * @return True if successfully transitioned, false otherwise
      */
-    public boolean setOrderState(OrderState orderState) {
-        if (this.orderState == null && orderState == OrderState.ORDER_RECEIVED) {
+    private boolean trySetOrderState(String orderState) {
+        if (orderState == null) {
+            return false;
+        }
+        if (this.orderState == null && orderState.equals(OrderState.ORDER_RECEIVED)) {
+            this.orderState = OrderState.ORDER_RECEIVED;
+            return true;
+        }
+        if (this.orderState == null) {
+            return false;
+        }
+        if (this.orderState.equals(OrderState.ORDER_RECEIVED) && orderState.equals(OrderState.SENT_TO_VENDOR)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.ORDER_RECEIVED && orderState == OrderState.SENT_TO_VENDOR) {
+        if (this.orderState.equals(OrderState.SENT_TO_VENDOR) && orderState.equals(OrderState.VENDOR_ACCEPTED)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.SENT_TO_VENDOR && orderState == OrderState.NOTIFIED) {
+        if (this.orderState.equals(OrderState.VENDOR_ACCEPTED) && orderState.equals(OrderState.NOTIFIED)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.NOTIFIED && orderState == OrderState.ACCEPTED) {
+        if (this.orderState.equals(OrderState.NOTIFIED) && orderState.equals(OrderState.ACCEPTED)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.ACCEPTED && orderState == OrderState.NEAR_VENDOR) {
+        if (this.orderState.equals(OrderState.ACCEPTED) && orderState.equals(OrderState.NEAR_VENDOR)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.NEAR_VENDOR && orderState == OrderState.PICKED_UP) {
+        if (this.orderState.equals(OrderState.NEAR_VENDOR) && orderState.equals(OrderState.PICKED_UP)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.PICKED_UP && orderState == OrderState.LEFT_PICKUP) {
+        if (this.orderState.equals(OrderState.PICKED_UP) && orderState.equals(OrderState.LEFT_PICKUP)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.LEFT_PICKUP && orderState == OrderState.NEAR_CUSTOMER) {
+        if (this.orderState.equals(OrderState.LEFT_PICKUP) && orderState.equals(OrderState.NEAR_CUSTOMER)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.NEAR_CUSTOMER && orderState == OrderState.DELIVERED) {
+        if (this.orderState.equals(OrderState.NEAR_CUSTOMER) && orderState.equals(OrderState.DELIVERED)) {
             this.orderState = orderState;
             return true;
         }
-        if (this.orderState == OrderState.DELIVERED && orderState == OrderState.ORDER_COMPLETED) {
+        if (this.orderState.equals(OrderState.DELIVERED) && orderState.equals(OrderState.ORDER_COMPLETED)) {
             this.orderState = orderState;
             return true;
         }
         return false;
+    }
+
+    public void updateOrderState(String orderState, long updateTimestamp) {
+        if (trySetOrderState(orderState)) {
+            this.updateTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(updateTimestamp), ZoneId.systemDefault());
+        }
     }
 }

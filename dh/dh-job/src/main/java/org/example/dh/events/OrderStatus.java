@@ -9,20 +9,26 @@ import java.io.IOException;
 
 public class OrderStatus extends Event {
     private final long orderId;
-    private final OrderState orderState;
+    private final String orderState;
+    private final long updateTimestamp;
 
-    public OrderStatus(long id, long timestamp, long orderId, OrderState orderState) {
+    public OrderStatus(long id, long timestamp, long orderId, String orderState, long updateTimestamp) {
         super(id, timestamp);
         this.orderId = orderId;
         this.orderState = orderState;
+        this.updateTimestamp = updateTimestamp;
     }
 
     public long getOrderId() {
         return orderId;
     }
 
-    public OrderState getOrderState() {
+    public String getOrderState() {
         return orderState;
+    }
+
+    public long getUpdateTimestamp() {
+        return updateTimestamp;
     }
 
     public static class OrderStatusSerializer implements StreamSerializer<OrderStatus> {
@@ -31,15 +37,17 @@ public class OrderStatus extends Event {
         public void write(ObjectDataOutput out, OrderStatus object) throws IOException {
             Event.write(out, object);
             out.writeLong(object.orderId);
-            out.writeObject(object.orderState);
+            out.writeUTF(object.orderState);
+            out.writeLong(object.updateTimestamp);
         }
 
         @Override
         public OrderStatus read(ObjectDataInput in) throws IOException {
             Tuple2<Long, Long> event = Event.readEvent(in);
             long orderId = in.readLong();
-            OrderState orderState = in.readObject();
-            return new OrderStatus(event.f0(), event.f1(), orderId, orderState);
+            String orderState = in.readUTF();
+            long updateTimestamp = in.readLong();
+            return new OrderStatus(event.f0(), event.f1(), orderId, orderState, updateTimestamp);
         }
 
         @Override
