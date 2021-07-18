@@ -2,26 +2,28 @@ package org.example.dh.state;
 
 import org.example.dh.events.OrderState;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class OrderStatusState {
     private String orderState;
-    private Date updateTimestamp;
+    private LocalDateTime updateTimestamp;
 
-    public OrderStatusState(String orderState, Date updateTimestamp) {
+    public OrderStatusState(String orderState, LocalDateTime updateTimestamp) {
         this.orderState = orderState;
         this.updateTimestamp = updateTimestamp;
     }
 
     public OrderStatusState() {
-        updateTimestamp = new Date(); // Prevent nullpointer exception on serialization
+        updateTimestamp = LocalDateTime.now(); // Prevent nullpointer exception on serialization
     }
 
     public String getOrderState() {
         return orderState;
     }
 
-    public Date getUpdateTimestamp() {
+    public LocalDateTime getUpdateTimestamp() {
         return updateTimestamp;
     }
 
@@ -89,7 +91,7 @@ public class OrderStatusState {
 
     public void updateOrderState(String orderState, long updateTimestamp) {
         if (trySetOrderState(orderState)) {
-            this.updateTimestamp = new Date(updateTimestamp);
+            this.updateTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(updateTimestamp), ZoneId.systemDefault());
         }
     }
 }

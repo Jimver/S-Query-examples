@@ -1,23 +1,23 @@
 package org.example.dh.state;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class RiderLocationState {
-    private Date updateTimestamp;
+    private LocalDateTime updateTimestamp;
     private double longitude;
     private double latitude;
 
-    public RiderLocationState(Date updateTimestamp, double longitude, double latitude) {
+    public RiderLocationState(LocalDateTime updateTimestamp, double longitude, double latitude) {
         this.updateTimestamp = updateTimestamp;
         this.longitude = longitude;
         this.latitude = latitude;
     }
 
     public RiderLocationState() {
-        this.updateTimestamp = new Date(); // Prevent nullpointer exception on serialization
+        this.updateTimestamp = LocalDateTime.now(); // Prevent nullpointer exception on serialization
     }
 
-    public Date getUpdateTimestamp() {
+    public LocalDateTime getUpdateTimestamp() {
         return updateTimestamp;
     }
 
@@ -29,7 +29,7 @@ public class RiderLocationState {
         return latitude;
     }
 
-    public void setUpdateTimestamp(Date updateTimestamp) {
+    public void setUpdateTimestamp(LocalDateTime updateTimestamp) {
         this.updateTimestamp = updateTimestamp;
     }
 

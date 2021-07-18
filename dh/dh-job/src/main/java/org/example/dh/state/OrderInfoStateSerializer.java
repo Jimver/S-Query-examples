@@ -5,7 +5,9 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.StreamSerializer;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class OrderInfoStateSerializer implements StreamSerializer<OrderInfoState> {
 
@@ -19,8 +21,8 @@ public class OrderInfoStateSerializer implements StreamSerializer<OrderInfoState
         out.writeDouble(object.getLatitudeDeliveryZone());
         out.writeUTF(object.getDeliveryZone());
         out.writeUTF(object.getVendorCategory());
-        out.writeLong(object.getPromisedDeliveryTimestamp().getTime());
-        out.writeLong(object.getCommittedPickupAtTimestamp().getTime());
+        out.writeLong(object.getPromisedDeliveryTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
+        out.writeLong(object.getCommittedPickupAtTimestamp().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli());
     }
 
     @Override
@@ -33,8 +35,8 @@ public class OrderInfoStateSerializer implements StreamSerializer<OrderInfoState
         double latitudeDeliveryZone = in.readDouble();
         String deliveryZone = in.readUTF();
         String vendorCategory = in.readUTF();
-        Date promisedDeliveryTimestamp = new Date(in.readLong());
-        Date committedPickupAtTimestamp = new Date(in.readLong());
+        LocalDateTime promisedDeliveryTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(in.readLong()), ZoneId.systemDefault());
+        LocalDateTime committedPickupAtTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(in.readLong()), ZoneId.systemDefault());
         return new OrderInfoState(longitudeVendor, latitudeVendor, longitudeCustomer, latitudeCustomer, longitudeDeliveryZone, latitudeDeliveryZone, deliveryZone, vendorCategory, promisedDeliveryTimestamp, committedPickupAtTimestamp);
     }
 
