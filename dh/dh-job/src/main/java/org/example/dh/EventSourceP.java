@@ -11,6 +11,7 @@ import com.hazelcast.jet.core.Watermark;
 import com.hazelcast.jet.pipeline.Sources;
 import com.hazelcast.jet.pipeline.StreamSource;
 import org.example.dh.events.Category;
+import org.example.dh.events.DeliveryZone;
 import org.example.dh.events.OrderInfo;
 import org.example.dh.events.OrderState;
 import org.example.dh.events.OrderStatus;
@@ -88,7 +89,7 @@ public class EventSourceP extends AbstractProcessor {
                     double latitudeCustomer = getRandomDouble(seq, latitude, range);
                     double longitudeDeliveryZone = getRandomDouble(seq, longitude, range);
                     double latitudeDeliveryZone = getRandomDouble(seq, latitude, range);
-                    String deliveryZone = getRandom(seq, 10) + "";
+                    String deliveryZone = DeliveryZone.zones[(int) getRandom(seq, DeliveryZone.zones.length)];
                     String vendorCategory = Category.categories[(int) getRandom(seq, Category.categories.length)];
                     long promisedDeliveryTimestamp = LocalDateTime.now().plus(Duration.of(45, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
                     long committedPickupAtTimestamp = LocalDateTime.now().plus(Duration.of(30, ChronoUnit.MINUTES)).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
