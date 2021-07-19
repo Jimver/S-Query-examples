@@ -26,6 +26,7 @@ JOBS=(
   "two-counter-job"
   "sample-imaps"
   "benchmark-getter-job"
+  "shared-code"
 )
 
 USER_JOBS=(
@@ -48,6 +49,8 @@ ORDER_PAYMENT_JOBS=(
 
 DH_JOBS=(
   "dh-job"
+  "dh-queries"
+  "dh-query-benchmark"
 )
 
 JARS=()
