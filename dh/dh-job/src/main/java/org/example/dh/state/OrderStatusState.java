@@ -99,9 +99,10 @@ public class OrderStatusState {
     }
 
     public void updateOrderState(String orderState, long updateTimestamp) {
-        if (trySetOrderState(orderState)) {
-            this.updateTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(updateTimestamp), ZoneId.systemDefault());
-            this.lateTimestamp = this.updateTimestamp.plusMinutes(LATE_MINUTES);
-        }
+        this.orderState = orderState;
+//        if (trySetOrderState(orderState)) {
+        this.updateTimestamp = LocalDateTime.ofInstant(Instant.ofEpochMilli(updateTimestamp), ZoneId.systemDefault());
+        this.lateTimestamp = this.updateTimestamp.plusMinutes(LATE_MINUTES);
+//        }
     }
 }

@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Properties;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.example.dh.EventSourceP.orderInfoSource;
 import static org.example.dh.EventSourceP.orderStatusSource;
 import static org.example.dh.EventSourceP.riderLocationSource;
@@ -81,7 +82,7 @@ public class DHBenchmark extends Benchmark {
         // Payment processor, outputs: (payment status, timestamp)
         StreamStage<Event> orderStatusProcessor = orderStatusSource.groupingKey(OrderStatus::getOrderId)
                 .mapStateful(
-//                        SECONDS.toMillis(5), // 5 second TTL
+//                        MILLISECONDS.toMillis(1500),
                         OrderStatusState::new,
                         (state, key, orderStatus) -> {
                             state.updateOrderState(orderStatus.getOrderState(), orderStatus.getUpdateTimestamp());

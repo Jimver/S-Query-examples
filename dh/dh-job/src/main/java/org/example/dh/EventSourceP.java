@@ -44,8 +44,8 @@ public class EventSourceP extends AbstractProcessor {
     private static final double longitude = 51.923686;
     private static final double latitude = 4.477015;
     private static final double range = 0.05;
-    private static final long updateTimeRange = 1000 * 60 * 20; // 20 minutes (in ms)
-    private static final long updateTimeOffset = updateTimeRange / 2;
+    private static final long updateTimeRange = 1000 * 60 * 40; // 40 minutes (in ms)
+    private static final long updateTimeOffset = updateTimeRange / 2; // Range becomes [cur - 20 min. , cur + 20 min. ]
 
     private final long itemsPerSecond;
     private final long startTime;
@@ -110,7 +110,7 @@ public class EventSourceP extends AbstractProcessor {
         return eventSource("order-status", eventsPerSecond, initialDelayMs,
                 (seq, timestamp) -> {
                     String orderState = OrderState.STATES[(int)getRandom(seq, 11)];
-                    long updateTimestamp = System.currentTimeMillis() - updateTimeOffset + getRandom(seq, updateTimeRange); // Generate timestamp uniformly in [cur - 10 min., cur + 10 min.]
+                    long updateTimestamp = System.currentTimeMillis() - updateTimeOffset + getRandom(seq, updateTimeRange); // Generate timestamp uniformly in [cur - 20 min., cur + 20 min.]
                     return new OrderStatus(seq, timestamp, (seq / 10) % numDistinctItemIds, orderState, updateTimestamp);
                 });
     }
