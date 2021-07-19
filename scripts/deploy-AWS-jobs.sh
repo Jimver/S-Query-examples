@@ -3,8 +3,8 @@
 JET_TEST_DIR="/mnt/c/Users/Jim/IdeaProjects/jet-test"
 TAR_FILE="hazelcast-jet-4.4.10-SNAPSHOT"
 
-REMOTE_HOSTS=(amazon0)
-REMOTE_USERS=(ec2-user)
+#REMOTE_HOSTS=(amazon0)
+#REMOTE_USERS=(ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3)
 #REMOTE_USERS=(ec2-user ec2-user ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4)
@@ -13,37 +13,37 @@ REMOTE_USERS=(ec2-user)
 #REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user)
 #REMOTE_HOSTS=(amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7)
 #REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
-#REMOTE_HOSTS=(amazon0 amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7 amazon8)
-#REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
+REMOTE_HOSTS=(amazon0 amazon1 amazon2 amazon3 amazon4 amazon5 amazon6 amazon7 amazon8)
+REMOTE_USERS=(ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user ec2-user)
 
 HOST_NUM=${#REMOTE_HOSTS[@]}
 USER_NUM=${#REMOTE_USERS[@]}
 
 JOBS=(
-  "query-job"
-  "query-state-job"
-  "stateful-stream-job"
-  "two-counter-job"
-  "sample-imaps"
+#  "query-job"
+#  "query-state-job"
+#  "stateful-stream-job"
+#  "two-counter-job"
+#  "sample-imaps"
   "benchmark-getter-job"
   "shared-code"
 )
 
 USER_JOBS=(
-  "user-jobs-shared"
-  "user-join-query-job"
-  "user-order-job"
-  "user-order-query-job"
-  "user-tracking-job"
-  "user-tracking-query-job"
+#  "user-jobs-shared"
+#  "user-join-query-job"
+#  "user-order-job"
+#  "user-order-query-job"
+#  "user-tracking-job"
+#  "user-tracking-query-job"
 )
 
 ORDER_PAYMENT_JOBS=(
-  "direct-query-job"
-  "order-payment-job"
-  "order-payment-query"
-  "order-payment-query-benchmark"
-  "order-payment-shared"
+#  "direct-query-job"
+#  "order-payment-job"
+#  "order-payment-query"
+#  "order-payment-query-benchmark"
+#  "order-payment-shared"
   "generic-query"
 )
 
@@ -51,6 +51,7 @@ DH_JOBS=(
   "dh-job"
   "dh-queries"
   "dh-query-benchmark"
+  "dh-direct-query"
 )
 
 JARS=()

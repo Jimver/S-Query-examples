@@ -41,6 +41,7 @@ DH_JOBS=(
   "dh-job"
   "dh-queries"
   "dh-query-benchmark"
+  "dh-direct-query"
 )
 
 JARS=()

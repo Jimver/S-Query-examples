@@ -3,13 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>order-payment-jobs</artifactId>
+        <artifactId>dh</artifactId>
         <groupId>org.example</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>direct-query-job</artifactId>
+    <artifactId>dh-direct-query</artifactId>
 
     <build>
         <plugins>
@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.DirectQueryJob</mainClass>
+                            <mainClass>org.example.dh.DHDirectQuery</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -29,17 +29,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>15</source>
+                    <target>15</target>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
-            <artifactId>order-payment-job</artifactId>
+            <artifactId>dh-job</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
@@ -50,4 +49,5 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>

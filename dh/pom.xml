@@ -14,6 +14,7 @@
         <module>dh-job</module>
         <module>dh-queries</module>
         <module>dh-query-benchmark</module>
+        <module>dh-direct-query</module>
     </modules>
 
     <properties>
