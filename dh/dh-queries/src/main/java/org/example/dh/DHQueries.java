@@ -17,10 +17,10 @@ public class DHQueries {
         HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
         String[][] queryArgsArray = new String[][]{
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
-                {"COUNT(t1.partitionKey), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
+                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
+                {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
+                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
+                {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
         };
 
         String[] queryArgs = new String[]{"", "", ""};
@@ -37,15 +37,17 @@ public class DHQueries {
             if (limit < 0 && limit != -1) {
                 throw new IllegalArgumentException("Query limit should be 0 or higher or -1!");
             }
-            if (!queryArgs[1].equals("")) {
-                queryArgs[1] += " AND ";
+            if (limit != -1) {
+                if (!queryArgs[1].equals("")) {
+                    queryArgs[1] += " AND ";
+                }
+                queryArgs[1] += String.format("CAST(t1.partitionKey AS int) < %d AND CAST(t2.partitionKey AS int) < %d", limit, limit);
             }
-            queryArgs[1] += String.format("CAST(t1.partitionKey AS int) < %d AND CAST(t2.partitionKey AS int) < %d", limit, limit);
         }
         final String[] finalQueryArgs = queryArgs;
         final int finalLimit = limit;
         long[] res;
-        if (finalLimit == -1) {
+        if (finalLimit == -1 && query == -1) {
             res = SqlHelper.queryJoinGivenMapNames("orderinfo", "orderstate",
                     "DHBenchmark", "DHBenchmark", hz, true);
         } else {

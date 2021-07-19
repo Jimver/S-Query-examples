@@ -81,10 +81,10 @@ public class DHQueryBenchmark {
             }
         }
         String[][] queryArgsArray = new String[][]{
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
-                {"COUNT(t1.partitionKey), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
-                {"COUNT(t1.partitionKey), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
+                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
+                {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
+                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
+                {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
         };
 
         String[] queryArgs = new String[]{"", "", ""};
