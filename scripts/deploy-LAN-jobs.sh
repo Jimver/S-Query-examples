@@ -38,6 +38,8 @@ ORDER_PAYMENT_JOBS=(
 
 DH_JOBS=(
   "dh-job"
+  "dh-queries"
+  "dh-query-benchmark"
 )
 
 JARS=()

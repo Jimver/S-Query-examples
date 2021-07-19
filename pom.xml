@@ -19,6 +19,7 @@
         <module>order-payment-jobs</module>
         <module>query-job</module>
         <module>dh</module>
+        <module>shared-code</module>
     </modules>
 
     <properties>

@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dh-queries</artifactId>
+    <artifactId>dh-query-benchmark</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.example</groupId>
@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.dh.DHQueries</mainClass>
+                            <mainClass>org.example.dh.DHQueryBenchmark</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
