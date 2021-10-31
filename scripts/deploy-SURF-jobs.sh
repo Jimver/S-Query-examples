@@ -21,6 +21,8 @@ JOBS=(
   "sample-imaps"
   "benchmark-getter-job"
   "shared-code"
+  "generic-query"
+  "generic-inc-query"
 )
 
 USER_JOBS=(
@@ -38,7 +40,6 @@ ORDER_PAYMENT_JOBS=(
   "order-payment-query"
   "order-payment-query-benchmark"
   "order-payment-shared"
-  "generic-query"
 )
 
 DH_JOBS=(

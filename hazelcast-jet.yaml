@@ -16,6 +16,8 @@ hazelcast-jet:
     state.phase.batch: true
     state.phase.batch.watermark: false
     state.phase.batch.concurrent: false
+    state.phase.incremental: true
+    state.phase.incremental.removeall: false
     state.blob: false
     memory.format.object: true
     wait.for.futures: false

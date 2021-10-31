@@ -86,14 +86,32 @@ public class SqlHelper {
     }
 
     public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean print) {
-        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, print, null);
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, false, print, null);
     }
 
     public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean print, String[] query) {
-        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, print, query);
+        return queryJoinGivenMapNames(transformName1, transformName2, jobName1, jobName2, hz, true, false, print, query);
     }
 
-    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean querySs, boolean print, String[] query) {
+    /**
+     * Helper method for constructing a JOIN query
+     * @param transformName1 Stateful transform name 1
+     * @param transformName2 Stateful transform name 2
+     * @param jobName1 Job name of transform 1
+     * @param jobName2 Job name of transform 2
+     * @param hz Hazelcast instance
+     * @param querySs Whether to query snapshot state (true) or not (false)
+     * @param incrementalSS Whether we need to query incremental snapshot (true) or full snapshots (false)
+     * @param print Whether to print the results to stdout (true) or not (false)
+     * @param query Extra array of query clauses, first part is the select clause, always use t1.{columnname} for transform 1 and t2.{columnname} for transform 2.
+     *              Array indices:
+     *              0 - Part in SELECT clause, example: "t1.partitionKey AS key1, t1.snapshotId AS ss1, t2.paritionKey AS key2, t2.snapshotId as ss2"
+     *              1 - In case of live state/full snapshot: part in WHERE clause, example: "t1.partitionKey <= 100"
+     *                  In case of incremental snapshot: part after USING(partitionKey), example: "WHERE t1.partitionKey < 100 ORDER BY t1.partitionKey"
+     *              2 - In case of live state/full snapshot: part after WHERE clause, example: "ORDER BY t1.partitionKey"
+     * @return Array of size 2 with latencies in nanoseconds, first long is latest snapshot id latency (ns), second is query latency (ns).
+     */
+    public static long[] queryJoinGivenMapNames(String transformName1, String transformName2, String jobName1, String jobName2, HazelcastInstance hz, boolean querySs, boolean incrementalSS, boolean print, String[] query) {
         DistributedObjectNames distributedObjectNames1 = getDistObjectNames(transformName1, jobName1);
         String liveMapName1 = distributedObjectNames1.getLiveMapName();
         String ssMapName1 = distributedObjectNames1.getSnapshotMapName();
@@ -110,38 +128,66 @@ public class SqlHelper {
         String queryMap1 = querySs ? ssMapName1 : liveMapName1;
         String queryMap2 = querySs ? ssMapName2 : liveMapName2;
 
-        String queryString = MessageFormat.format(
-                "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
-                queryMap1,
-                queryMap2,
-                querySnapshotId1,
-                querySnapshotId2,
-                PARTITION_KEY,
-                SNAPSHOT_ID
-        );
+        String queryString;
+        if (!incrementalSS) {
+            // Live/full snapshot query
+            queryString = MessageFormat.format(
+                    "SELECT t1.*, t2.* FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
+                    queryMap1,
+                    queryMap2,
+                    querySnapshotId1,
+                    querySnapshotId2,
+                    PARTITION_KEY,
+                    SNAPSHOT_ID
+            );
+        } else {
+            // Incremental snapshot query
+            queryString = MessageFormat.format(
+                    "SELECT t1.*, t2.* FROM ({0}) t1 JOIN ({1}) t2 USING({2})",
+                    getIncrementalLatestSS(queryMap1, querySnapshotId1),
+                    getIncrementalLatestSS(queryMap2, querySnapshotId2),
+                    PARTITION_KEY
+            );
+        }
         if (query != null) {
             String selectClause = "t1.*, t2.*";
             if (!query[0].equals("")) {
                 // First SELECT clause
                 selectClause = query[0];
             }
-            queryString = MessageFormat.format(
-                    "SELECT {6} FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
-                    queryMap1,
-                    queryMap2,
-                    querySnapshotId1,
-                    querySnapshotId2,
-                    PARTITION_KEY,
-                    SNAPSHOT_ID,
-                    selectClause
-            );
-            if (!query[1].equals("")) {
-                // Second WHERE clause
-                queryString = MessageFormat.format("{0} AND {1}", queryString, query[1]);
-            }
-            if (!query[2].equals("")) {
-                // Third end of query
-                queryString = MessageFormat.format("{0} {1}", queryString, query[2]);
+            if (!incrementalSS) {
+                // Live/full snapshot query
+                queryString = MessageFormat.format(
+                        "SELECT {6} FROM \"{0}\" t1 JOIN \"{1}\" t2 USING({4}) WHERE t1.{5}={2,number,#} AND t2.{5}={3,number,#}",
+                        queryMap1,
+                        queryMap2,
+                        querySnapshotId1,
+                        querySnapshotId2,
+                        PARTITION_KEY,
+                        SNAPSHOT_ID,
+                        selectClause
+                );
+                if (!query[1].equals("")) {
+                    // Second WHERE clause
+                    queryString = MessageFormat.format("{0} AND {1}", queryString, query[1]);
+                }
+                if (!query[2].equals("")) {
+                    // Third end of query
+                    queryString = MessageFormat.format("{0} {1}", queryString, query[2]);
+                }
+            } else {
+                // Incremental snapshot query
+                queryString = MessageFormat.format(
+                        "SELECT {2} FROM ({0}) t1 JOIN ({1}) t2 USING({3})",
+                        getIncrementalLatestSS(queryMap1, querySnapshotId1),
+                        getIncrementalLatestSS(queryMap2, querySnapshotId2),
+                        selectClause,
+                        PARTITION_KEY
+                );
+                if (!query[1].equals("")) {
+                    // Third end of query
+                    queryString = MessageFormat.format("{0} {1}", queryString, query[1]);
+                }
             }
 
         }
@@ -150,15 +196,27 @@ public class SqlHelper {
         long beforeQuery = System.nanoTime();
         try (SqlResult result = hz.getSql().execute(queryString)) {
             long afterQuery = System.nanoTime();
-            resultToHeaderAndRows(result, false).forEach((s) -> {
-                if (print) System.out.println(s);
-            });
+            if (print) {
+                List<String> results = resultToHeaderAndRows(result, false);
+                results.forEach(System.out::println);
+                System.out.println(results.size());
+            }
             return new long[]{afterSSId - beforeSSId, afterQuery - beforeQuery};
         } catch (Exception e) {
             // Query failed for some reason
             e.printStackTrace();
             return new long[]{afterSSId - beforeSSId, -1};
         }
+    }
+
+    /**
+     * Helper method for getting a query for incremental snapshot state limited by the latest snapshot id.
+     * @param imapName The snapshot state IMap to query
+     * @param latestSnapshotId The latest snapshot id
+     * @return SQL query string querying the IMap with the latest snapshot IDs
+     */
+    public static String getIncrementalLatestSS(String imapName, long latestSnapshotId) {
+        return MessageFormat.format("SELECT a.* FROM \"{0}\" a INNER JOIN (SELECT c.{1}, MAX(c.{2}) AS maxSnapshotId FROM \"{0}\" c WHERE c.{2} <= {3,number,#} GROUP BY c.{1}) b ON (CAST(a.{1} AS INT)=CAST(b.{1} AS INT) AND a.{2} = b.maxSnapshotId)", imapName, PARTITION_KEY, SNAPSHOT_ID, latestSnapshotId);
     }
 
     private static String getNChars(int n, char character) {

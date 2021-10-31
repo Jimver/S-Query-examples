@@ -20,6 +20,8 @@
         <module>query-job</module>
         <module>dh</module>
         <module>shared-code</module>
+        <module>generic-query</module>
+        <module>generic-inc-query</module>
     </modules>
 
     <properties>

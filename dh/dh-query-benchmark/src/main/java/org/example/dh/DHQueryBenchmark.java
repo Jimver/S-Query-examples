@@ -49,14 +49,15 @@ public class DHQueryBenchmark {
     /**
      * Main method
      * Run from hazelcast/config as working directory:
-     * java -cp "../lib/*" org.example.dh.DHQueryBenchmark 0 -1 0 -1 2
+     * java -cp "../lib/*" org.example.dh.DHQueryBenchmark false 0 -1 0 -1 2
      * Writing to file and stdout:
-     * java -cp "../lib/*" org.example.dh.DHQueryBenchmark 0 -1 0 -1 2 2>&1 | tee -i query-100k-2.txt
+     * java -cp "../lib/*" org.example.dh.DHQueryBenchmark false 0 -1 0 -1 2 2>&1 | tee -i query-100k-2.txt
      * Size of query result is:
      * size(itemCount)=order size * (sizeof(stock_id)+sizeof(count)) = order size * (8+2) = order size * 10
      * state size * (size(order_id)+size(order_id)+size(size)+size(total)+size(paymentstatus)+size(itemCount)) =
      * state size * (8+8+8+8+2+(order size*10)) = state size * (34 + order size * 10)
      * @param args Array of arguments:
+     *             0. Incremental snapshot (true) or not (false)
      *             1. Query interval in ms (0 means no pause)
      *             2. print latencies every x queries (-1 means don't print on interval)
      *             3. Choose which query (0,1,2,3) or -1 for SELECT *
@@ -66,50 +67,67 @@ public class DHQueryBenchmark {
     public static void main(String[] args) {
         HazelcastInstance hz = HazelcastClient.newHazelcastClient();
 
+        if (args.length == 0) {
+            throw new IllegalArgumentException("Expected at least one program argument");
+        }
+        boolean incSs = Boolean.parseBoolean(args[0]);
+
         int queryInterval = 1000;
-        if (args.length >= 1) {
-            queryInterval = Integer.parseInt(args[0]);
+        if (args.length >= 2) {
+            queryInterval = Integer.parseInt(args[1]);
             if (queryInterval < 0) {
                 throw new IllegalArgumentException("Query interval should be 0 or higher!");
             }
         }
         int printEvery = 10;
         if (args.length >= 2) {
-            printEvery = Integer.parseInt(args[1]);
+            printEvery = Integer.parseInt(args[2]);
             if (printEvery != -1 && printEvery <= 0) {
                 throw new IllegalArgumentException("Print every should be -1 or 1 or higher!");
             }
         }
-        String[][] queryArgsArray = new String[][]{
-                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
-                {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
-                {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
-                {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
-        };
+        String[][] queryArgsArray;
+        if (!incSs) {
+            queryArgsArray = new String[][]{
+                    {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
+                    {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
+                    {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
+                    {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
+            };
+        } else {
+            queryArgsArray = new String[][]{
+                    {"COUNT(*), deliveryZone", "WHERE (orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
+                    {"COUNT(*), vendorCategory", "WHERE (orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
+                    {"COUNT(*), deliveryZone", "WHERE (orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
+                    {"COUNT(*), deliveryZone", "WHERE (orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
+            };
+        }
 
         String[] queryArgs = new String[]{"", "", ""};
         int query = -1;
         if (args.length >= 3) {
-            query = Integer.parseInt(args[2]);
+            query = Integer.parseInt(args[3]);
             if (query != -1) {
                 queryArgs = queryArgsArray[query];
             }
         }
         int limit = -1;
         if (args.length >= 4) {
-            limit = Integer.parseInt(args[3]);
+            limit = Integer.parseInt(args[4]);
             if (limit < 0 && limit != -1) {
                 throw new IllegalArgumentException("Query limit should be 0 or higher or -1!");
             }
             if (!queryArgs[1].equals("")) {
                 queryArgs[1] += " AND ";
+            } else if (incSs) {
+                queryArgs[1] = "WHERE ";
             }
             queryArgs[1] += String.format("CAST(t1.partitionKey AS int) < %d AND CAST(t2.partitionKey AS int) < %d", limit, limit);
         }
         final String[] finalQueryArgs = queryArgs;
         int concurrentThreads = 1;
         if (args.length >= 5) {
-            concurrentThreads = Integer.parseInt(args[4]);
+            concurrentThreads = Integer.parseInt(args[5]);
             if (concurrentThreads <= 0 && concurrentThreads != -1) {
                 throw new IllegalArgumentException("Concurrent threads should be 1 or higher or -1!");
             }
@@ -134,10 +152,10 @@ public class DHQueryBenchmark {
                 while(!stop.get()) {
                     if (finalLimit == -1) {
                         res = SqlHelper.queryJoinGivenMapNames("orderinfo", "orderstate",
-                                "DHBenchmark", "DHBenchmark", hz, false);
+                                "DHBenchmark", "DHBenchmark", hz, true, incSs, false, null);
                     } else {
                         res = SqlHelper.queryJoinGivenMapNames("orderinfo", "orderstate",
-                                "DHBenchmark", "DHBenchmark", hz, false, finalQueryArgs);
+                                "DHBenchmark", "DHBenchmark", hz, true, incSs, false, finalQueryArgs);
                     }
                     long ssidLatency = res[0];
                     ssidLatencies.add(ssidLatency);
