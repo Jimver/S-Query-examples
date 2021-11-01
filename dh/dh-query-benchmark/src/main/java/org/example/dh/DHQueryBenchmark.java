@@ -86,22 +86,13 @@ public class DHQueryBenchmark {
                 throw new IllegalArgumentException("Print every should be -1 or 1 or higher!");
             }
         }
-        String[][] queryArgsArray;
-        if (!incSs) {
-            queryArgsArray = new String[][]{
-                    {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
-                    {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
-                    {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
-                    {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
-            };
-        } else {
-            queryArgsArray = new String[][]{
-                    {"COUNT(*), deliveryZone", "WHERE (orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
-                    {"COUNT(*), vendorCategory", "WHERE (orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
-                    {"COUNT(*), deliveryZone", "WHERE (orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
-                    {"COUNT(*), deliveryZone", "WHERE (orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
-            };
-        }
+
+        String[][] queryArgsArray = new String[][]{
+            {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED' AND lateTimestamp<LOCALTIMESTAMP)", "GROUP BY deliveryZone"},
+            {"COUNT(*), vendorCategory", "(orderState='NOTIFIED' OR orderState='ACCEPTED')", "GROUP BY vendorCategory"},
+            {"COUNT(*), deliveryZone", "(orderState='VENDOR_ACCEPTED')", "GROUP BY deliveryZone"},
+            {"COUNT(*), deliveryZone", "(orderState='PICKED_UP' OR orderState='LEFT_PICKUP' OR orderState='NEAR_CUSTOMER')", "GROUP BY deliveryZone"}
+        };
 
         String[] queryArgs = new String[]{"", "", ""};
         int query = -1;

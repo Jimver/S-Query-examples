@@ -178,7 +178,7 @@ public class SqlHelper {
             } else {
                 // Incremental snapshot query
                 queryString = MessageFormat.format(
-                        "SELECT {2} FROM ({0}) t1 JOIN ({1}) t2 USING({3})",
+                        "SELECT {2} FROM ({0}) t1 JOIN ({1}) t2 USING({3}) WHERE TRUE=TRUE",
                         getIncrementalLatestSS(queryMap1, querySnapshotId1),
                         getIncrementalLatestSS(queryMap2, querySnapshotId2),
                         selectClause,
@@ -186,7 +186,11 @@ public class SqlHelper {
                 );
                 if (!query[1].equals("")) {
                     // Third end of query
-                    queryString = MessageFormat.format("{0} {1}", queryString, query[1]);
+                    queryString = MessageFormat.format("{0} AND {1}", queryString, query[1]);
+                }
+                if (!query[2].equals("")) {
+                    // Third end of query
+                    queryString = MessageFormat.format("{0} {1}", queryString, query[2]);
                 }
             }
 
