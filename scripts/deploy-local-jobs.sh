@@ -29,7 +29,6 @@ ORDER_PAYMENT_JOBS=(
   "order-payment-job"
   "order-payment-query"
   "order-payment-query-benchmark"
-  "order-payment-shared"
 )
 
 DH_JOBS=(
